@@ -1,0 +1,11 @@
+[build]
+  base = "client"
+  command = "npm run build"
+  publish = "client/dist"
+
+# Bắt buộc cho React Router (SPA) — mọi route đều trả về index.html,
+# nếu không các URL như /play/xxx/inventory sẽ bị 404 khi load trực tiếp
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

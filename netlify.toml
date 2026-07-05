@@ -1,0 +1,12 @@
+[build]
+  base = "work/client"
+  publish = "work/client/dist"
+  command = "npm install && npm run build"
+
+[build.environment]
+  CI = "false"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

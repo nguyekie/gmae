@@ -1,0 +1,96 @@
+:root {
+  /* --- Màu nền --- */
+  --bg-void: #14161c;
+  --surface: #1d2029;
+  --surface-raised: #262b38;
+  --surface-line: #333a4a;
+
+  /* --- Chữ --- */
+  --text-primary: #e9e6dd;
+  --text-muted: #9098a8;
+  --text-faint: #5c6377;
+
+  /* --- Màu tín hiệu (signature): vàng-hổ phách của mảnh Lõi Nguyên Tố --- */
+  --accent-shard: #c9a24b;
+  --accent-shard-glow: rgba(201, 162, 75, 0.35);
+
+  /* --- Màu nguyên tố --- */
+  --elem-fire: #e4572e;
+  --elem-water: #2e86ab;
+  --elem-earth: #6b8f57;
+  --elem-wind: #8fd7d0;
+  --elem-void: #9b6bd9;
+
+  /* --- Màu độ hiếm vật phẩm --- */
+  --rarity-common: #9098a8;
+  --rarity-rare: #4a90d9;
+  --rarity-epic: #a855f7;
+  --rarity-legendary: #e0a93e;
+
+  /* --- Trạng thái --- */
+  --danger: #d9534a;
+  --success: #6fbf73;
+
+  /* --- Typography --- */
+  --font-display: "Cinzel", serif;
+  --font-body: "Work Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: radial-gradient(ellipse at top, #1a1d26 0%, var(--bg-void) 60%);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent-shard);
+  outline-offset: 2px;
+}
+
+input {
+  font-family: var(--font-body);
+}
+
+::selection {
+  background: var(--accent-shard-glow);
+}
+
+/* Thanh cuộn tối giản, hợp không khí */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface-line);
+  border-radius: 4px;
+}

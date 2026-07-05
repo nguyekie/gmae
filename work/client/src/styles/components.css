@@ -1,0 +1,1209 @@
+/* ============ Layout chung ============ */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.auth-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 20% 20%, var(--accent-shard-glow), transparent 40%),
+    radial-gradient(ellipse at top, #1a1d26 0%, var(--bg-void) 65%);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--surface);
+  border: 1px solid var(--surface-line);
+  border-radius: 4px;
+  padding: 36px 32px;
+  position: relative;
+}
+
+.auth-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-shard), transparent);
+}
+
+.auth-title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--accent-shard);
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.auth-subtitle {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-bottom: 28px;
+}
+
+.field {
+  margin-bottom: 16px;
+}
+
+.field label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg-void);
+  border: 1px solid var(--surface-line);
+  border-radius: 3px;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: var(--accent-shard);
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  background: var(--accent-shard);
+  color: #1a1408;
+  font-weight: 600;
+  border: none;
+  border-radius: 3px;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  transition: filter 0.15s ease;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--surface-line);
+  border-radius: 3px;
+  font-size: 13px;
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent-shard);
+  color: var(--accent-shard);
+}
+
+.error-banner {
+  background: rgba(217, 83, 74, 0.12);
+  border: 1px solid var(--danger);
+  color: #f2a49e;
+  padding: 10px 12px;
+  border-radius: 3px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.success-banner {
+  background: rgba(111, 191, 115, 0.12);
+  border: 1px solid var(--success);
+  color: #b7e2b9;
+  padding: 10px 12px;
+  border-radius: 3px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+/* ============ Sidebar ============ */
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--surface-line);
+  padding: 24px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.sidebar__brand {
+  font-family: var(--font-display);
+  font-size: 20px;
+  color: var(--accent-shard);
+  letter-spacing: 0.03em;
+}
+
+.sidebar__char {
+  background: var(--surface-raised);
+  border-radius: 4px;
+  padding: 14px;
+  border: 1px solid var(--surface-line);
+}
+
+.sidebar__char-name {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.sidebar__char-meta {
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.sidebar__gold {
+  font-family: var(--font-mono);
+  color: var(--accent-shard);
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-item {
+  padding: 10px 12px;
+  border-radius: 3px;
+  color: var(--text-muted);
+  font-size: 14px;
+  background: none;
+  border: none;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-item:hover {
+  background: var(--surface-raised);
+  color: var(--text-primary);
+}
+
+.nav-item--active {
+  background: var(--surface-raised);
+  color: var(--accent-shard);
+  border-left: 2px solid var(--accent-shard);
+}
+
+.sidebar__logout {
+  margin-top: auto;
+}
+
+/* ============ Main content ============ */
+.main-content {
+  flex: 1;
+  padding: 32px 40px;
+  max-width: 1100px;
+}
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.page-subtitle {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-bottom: 28px;
+}
+
+/* ============ Shard bar (HP/MP/EXP) ============ */
+.shard-bar {
+  margin-bottom: 10px;
+}
+
+.shard-bar__labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 3px;
+  font-family: var(--font-mono);
+}
+
+.shard-bar__track {
+  height: 8px;
+  background: var(--bg-void);
+  border-radius: 2px;
+  overflow: hidden;
+  border: 1px solid var(--surface-line);
+}
+
+.shard-bar__fill {
+  height: 100%;
+  transition: width 0.4s ease;
+}
+
+/* ============ Item card (góc vát như tinh thể) ============ */
+.item-card {
+  background: var(--surface-raised);
+  border: 1px solid var(--surface-line);
+  padding: 14px;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  position: relative;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+  cursor: default;
+}
+
+.item-card[role="button"] {
+  cursor: pointer;
+}
+
+.item-card[role="button"]:hover {
+  transform: translateY(-2px);
+}
+
+.item-card--common { border-color: var(--rarity-common); }
+.item-card--rare { border-color: var(--rarity-rare); box-shadow: 0 0 12px rgba(74,144,217,0.15); }
+.item-card--epic { border-color: var(--rarity-epic); box-shadow: 0 0 12px rgba(168,85,247,0.18); }
+.item-card--legendary { border-color: var(--rarity-legendary); box-shadow: 0 0 16px rgba(224,169,62,0.25); }
+
+.item-card__header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.item-card__rarity {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+.item-card__rarity--common { color: var(--rarity-common); }
+.item-card__rarity--rare { color: var(--rarity-rare); }
+.item-card__rarity--epic { color: var(--rarity-epic); }
+.item-card__rarity--legendary { color: var(--rarity-legendary); }
+
+.item-card__slot {
+  font-size: 10px;
+  color: var(--text-faint);
+}
+
+.item-card__name {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.item-card__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.item-card__stat {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  background: var(--bg-void);
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+
+.item-card__footer {
+  margin-top: 8px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.qty-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.qty-stepper__input {
+  width: 56px;
+  text-align: center;
+}
+
+/* ============ Equipment slots ============ */
+.equip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.equip-slot {
+  border: 1px dashed var(--surface-line);
+  border-radius: 4px;
+  padding: 12px;
+  min-height: 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.equip-slot__label {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.equip-slot__empty {
+  color: var(--text-faint);
+  font-size: 12px;
+  font-style: italic;
+}
+
+.equip-slot__item {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.small-btn {
+  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: 3px;
+  border: 1px solid var(--surface-line);
+  background: var(--bg-void);
+  color: var(--text-muted);
+}
+
+.small-btn:hover {
+  border-color: var(--accent-shard);
+  color: var(--accent-shard);
+}
+
+.small-btn--danger:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+/* ============ Class picker (tạo nhân vật) ============ */
+.class-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.class-option {
+  background: var(--surface-raised);
+  border: 1px solid var(--surface-line);
+  border-radius: 4px;
+  padding: 16px 12px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.class-option--selected {
+  border-color: var(--accent-shard);
+  color: var(--accent-shard);
+  box-shadow: 0 0 14px var(--accent-shard-glow);
+}
+
+.class-option__icon {
+  font-size: 24px;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.class-option__name {
+  font-weight: 600;
+  font-size: 13px;
+  display: block;
+}
+
+.class-option__desc {
+  font-size: 10px;
+  color: var(--text-faint);
+  margin-top: 4px;
+  display: block;
+}
+
+/* ============ Combat log ============ */
+.combat-log {
+  background: var(--bg-void);
+  border: 1px solid var(--surface-line);
+  border-radius: 4px;
+  padding: 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  max-height: 240px;
+  overflow-y: auto;
+  margin-top: 16px;
+}
+
+.combat-log__line {
+  margin-bottom: 4px;
+}
+
+.zone-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.zone-card {
+  background: var(--surface);
+  border: 1px solid var(--surface-line);
+  border-radius: 4px;
+  padding: 18px;
+}
+
+.zone-card__name {
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--accent-shard);
+  margin-bottom: 4px;
+}
+
+.zone-card__desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+
+.monster-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-top: 1px solid var(--surface-line);
+  font-size: 13px;
+}
+
+.character-select-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.character-select-card {
+  background: var(--surface-raised);
+  border: 1px solid var(--surface-line);
+  border-radius: 4px;
+  padding: 20px;
+  text-align: center;
+}
+
+.character-select-card:hover {
+  border-color: var(--accent-shard);
+  cursor: pointer;
+}
+
+.marketplace-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.marketplace-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface-raised);
+  border: 1px solid var(--surface-line);
+  border-radius: 4px;
+  padding: 12px 16px;
+}
+
+.tag {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--bg-void);
+  color: var(--text-muted);
+}
+
+/* ============ Bản đồ khám phá (2D walkable map) ============ */
+.map-viewport {
+  position: relative;
+  overflow: hidden;
+  background: #223321;
+  border: 1px solid var(--surface-line);
+  border-radius: 4px;
+  outline: none;
+  image-rendering: pixelated;
+}
+
+.map-tile {
+  position: absolute;
+}
+
+.map-tile--grass { background: #2b4327; }
+.map-tile--path { background: #4a3f2c; }
+.map-tile--tree { background: #1a2c19; box-shadow: inset 0 0 0 2px #0f1c0e; }
+.map-tile--water { background: #1f4a5c; box-shadow: inset 0 0 0 2px #163a49; }
+
+.map-entity {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: left 0.12s linear, top 0.12s linear;
+  pointer-events: none;
+}
+
+.map-entity--highlight .pixel-sprite {
+  filter: drop-shadow(0 0 4px var(--accent-shard-glow)) drop-shadow(0 0 4px var(--accent-shard));
+}
+
+.map-entity__label {
+  font-size: 9px;
+  color: var(--text-primary);
+  background: rgba(20, 22, 28, 0.75);
+  padding: 1px 5px;
+  border-radius: 3px;
+  white-space: nowrap;
+  margin-top: 2px;
+  transform: translateY(-4px);
+}
+
+.map-entity__label--self {
+  color: var(--accent-shard);
+}
+
+.pixel-sprite--bob {
+  animation: sprite-bob 1.6s ease-in-out infinite;
+}
+
+@keyframes sprite-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.map-interact-hint {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  text-align: center;
+  font-size: 12px;
+  background: rgba(20, 22, 28, 0.85);
+  border: 1px solid var(--accent-shard);
+  color: var(--text-primary);
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+
+.map-interact-hint kbd {
+  background: var(--surface-raised);
+  border: 1px solid var(--surface-line);
+  border-radius: 3px;
+  padding: 0 4px;
+  font-family: var(--font-mono);
+}
+
+.map-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 14px;
+}
+
+.map-controls__dpad {
+  display: grid;
+  grid-template-areas:
+    ".    up    ."
+    "left .     right"
+    ".    down  .";
+  gap: 4px;
+  width: 132px;
+}
+
+.map-controls__dpad .small-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quest-tracker {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 200px;
+  background: rgba(20, 22, 28, 0.88);
+  border: 1px solid var(--surface-line);
+  border-radius: 4px;
+  padding: 10px 12px;
+  font-size: 11px;
+}
+
+.quest-tracker__title {
+  color: var(--accent-shard);
+  font-family: var(--font-display);
+  margin-bottom: 6px;
+}
+
+.quest-tracker__entry + .quest-tracker__entry {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--surface-line);
+}
+
+.quest-tracker__quest-title {
+  color: var(--text-primary);
+  margin-bottom: 3px;
+}
+
+.quest-tracker__objective {
+  color: var(--text-muted);
+}
+
+.quest-tracker__ready {
+  color: var(--success);
+  margin-top: 3px;
+}
+
+/* ============ Modal (chiến đấu / hội thoại NPC) ============ */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 11, 15, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 20px;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 420px;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--surface-line);
+  border-radius: 4px;
+  padding: 22px;
+  position: relative;
+}
+
+.modal-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-shard), transparent);
+}
+
+.modal-card__header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 6px;
+}
+
+.modal-card__title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--accent-shard);
+}
+
+.modal-card__subtitle {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.quest-block {
+  background: var(--surface-raised);
+  border: 1px solid var(--surface-line);
+  border-radius: 4px;
+  padding: 12px 14px;
+  margin-top: 14px;
+}
+
+.quest-block__title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.quest-block__title {
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.quest-block__dialogue {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.quest-block__hint {
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-top: 6px;
+}
+
+.quest-block__objectives {
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+.quest-block__objective {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+  color: var(--text-muted);
+}
+
+.quest-block__objective-count--done {
+  color: var(--success);
+}
+
+.quest-block__rewards {
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--accent-shard);
+}
+
+/* ============ Chat ============ */
+.chat-shell {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 20px;
+  height: calc(100vh - 180px);
+  min-height: 420px;
+}
+
+.chat-sidebar {
+  background: var(--surface);
+  border: 1px solid var(--surface-line);
+  border-radius: 4px;
+  padding: 14px;
+  overflow-y: auto;
+}
+
+.chat-sidebar__section-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+  margin: 14px 0 8px;
+}
+.chat-sidebar__section-title:first-child {
+  margin-top: 0;
+}
+
+.chat-contact {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.chat-contact:hover {
+  background: var(--surface-raised);
+}
+
+.chat-contact--active {
+  background: var(--surface-raised);
+  color: var(--accent-shard);
+}
+
+.chat-contact__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-faint);
+  flex-shrink: 0;
+}
+
+.chat-panel {
+  background: var(--surface);
+  border: 1px solid var(--surface-line);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-panel__header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--surface-line);
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-panel__messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chat-bubble {
+  max-width: 70%;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.chat-bubble--mine {
+  align-self: flex-end;
+  background: var(--accent-shard);
+  color: #1a1408;
+  border-bottom-right-radius: 2px;
+}
+
+.chat-bubble--theirs {
+  align-self: flex-start;
+  background: var(--surface-raised);
+  border: 1px solid var(--surface-line);
+  border-bottom-left-radius: 2px;
+}
+
+.chat-bubble__author {
+  font-size: 10px;
+  color: var(--text-faint);
+  margin-bottom: 2px;
+}
+
+.chat-panel__empty {
+  color: var(--text-faint);
+  font-size: 13px;
+  text-align: center;
+  margin: auto;
+}
+
+.chat-panel__input {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid var(--surface-line);
+}
+
+.chat-panel__input input {
+  flex: 1;
+  padding: 10px 12px;
+  background: var(--bg-void);
+  border: 1px solid var(--surface-line);
+  border-radius: 3px;
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.chat-panel__input input:focus {
+  border-color: var(--accent-shard);
+}
+
+/* ============ Bạn bè ============ */
+.friend-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface-raised);
+  border: 1px solid var(--surface-line);
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+}
+
+.friend-row__name {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.friend-row__actions {
+  display: flex;
+  gap: 6px;
+}
+
+.add-friend-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  max-width: 380px;
+}
+
+.add-friend-form input {
+  flex: 1;
+  padding: 10px 12px;
+  background: var(--bg-void);
+  border: 1px solid var(--surface-line);
+  border-radius: 3px;
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+/* ============ PvP ============ */
+.pvp-vs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin: 18px 0;
+}
+
+.pvp-vs__side {
+  text-align: center;
+  flex: 1;
+}
+
+.pvp-vs__name {
+  font-weight: 600;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.pvp-vs__badge {
+  font-family: var(--font-display);
+  color: var(--danger);
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.toast-stack {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 80;
+}
+
+.toast {
+  background: var(--surface-raised);
+  border: 1px solid var(--surface-line);
+  border-left: 3px solid var(--accent-shard);
+  border-radius: 4px;
+  padding: 12px 16px;
+  font-size: 13px;
+  min-width: 240px;
+  max-width: 320px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+}
+
+.toast--challenge {
+  border-left-color: var(--danger);
+}
+
+.toast__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.map-tile--portal {
+  background: radial-gradient(circle, rgba(201,162,75,0.45) 0%, rgba(201,162,75,0.08) 70%);
+  animation: portal-pulse 2s ease-in-out infinite;
+}
+
+@keyframes portal-pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.map-portal-label {
+  position: absolute;
+  font-size: 9px;
+  color: var(--accent-shard);
+  white-space: nowrap;
+  text-align: center;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ============ Chọn số lượng khi mua ở Cửa hàng ============ */
+.qty-stepper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.qty-stepper__btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 3px;
+  border: 1px solid var(--surface-line);
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.qty-stepper__btn:hover:not(:disabled) {
+  border-color: var(--accent-shard);
+}
+
+.qty-stepper__btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.qty-stepper__input {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  background: var(--bg-void);
+  border: 1px solid var(--surface-line);
+  border-radius: 3px;
+  color: var(--text-primary);
+  padding: 4px 2px;
+  font-size: 12px;
+  -moz-appearance: textfield;
+}
+
+.qty-stepper__input::-webkit-outer-spin-button,
+.qty-stepper__input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ============ Icon vật phẩm ============ */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 10px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.06) 0%, var(--bg-void) 75%);
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ============ Boss: giao diện đặc biệt, khác hẳn quái thường ============ */
+.map-entity--boss {
+  z-index: 5;
+}
+.map-entity--boss .pixel-sprite {
+  filter: drop-shadow(0 0 8px rgba(224, 169, 62, 0.7));
+  animation: boss-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes boss-pulse {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(224,169,62,0.5)); }
+  50% { filter: drop-shadow(0 0 14px rgba(224,169,62,0.9)); }
+}
+
+.map-entity__boss-tag {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 8px;
+  font-weight: 700;
+  color: #1a1408;
+  background: var(--rarity-legendary);
+  padding: 1px 5px;
+  border-radius: 2px;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.map-entity__boss-hp {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 4px;
+  background: var(--bg-void);
+  border: 1px solid var(--rarity-legendary);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.map-entity__boss-hp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--danger), var(--rarity-legendary));
+}
+
+.combat-overlay--boss .modal-card {
+  border: 2px solid var(--rarity-legendary);
+  box-shadow: 0 0 32px rgba(224, 169, 62, 0.35);
+  background: linear-gradient(180deg, #241d10 0%, var(--surface) 40%);
+}
+
+.combat-overlay--boss .modal-card__title {
+  color: var(--rarity-legendary);
+  text-shadow: 0 0 12px rgba(224, 169, 62, 0.6);
+}
+
+.boss-banner {
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--rarity-legendary);
+  border: 1px solid var(--rarity-legendary);
+  border-radius: 3px;
+  padding: 6px;
+  margin-bottom: 14px;
+  background: rgba(224, 169, 62, 0.08);
+}
+
+.contribution-banner {
+  background: rgba(74, 144, 217, 0.12);
+  border: 1px solid var(--rarity-rare);
+  color: #bcdcff;
+  padding: 10px 12px;
+  border-radius: 3px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.respawn-banner {
+  background: rgba(90, 90, 90, 0.15);
+  border: 1px solid var(--surface-line);
+  color: var(--text-muted);
+  padding: 10px 12px;
+  border-radius: 3px;
+  font-size: 13px;
+  margin-bottom: 16px;
+  text-align: center;
+}

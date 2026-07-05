@@ -1,0 +1,115 @@
+interface QuestStep {
+  levelRequirement: number;
+  title: string;
+  npc: string;
+  dialogue: string;
+  objective: string;
+}
+
+const QUEST_STEPS: QuestStep[] = [
+  {
+    levelRequirement: 1,
+    title: "Chương 1 — Tiếng Gọi Từ Mảnh Vỡ",
+    npc: "Trưởng Làng Oris",
+    dialogue:
+      "\"Con đã Thức Tỉnh rồi đấy... ta cảm nhận được mảnh vỡ trong con đang rung động. Hãy cẩn thận — kể từ Đại Vỡ Vụn, Rừng Thì Thầm không còn an toàn như trước nữa.\"",
+    objective: "Đánh bại 3 Nhớt Rừng tại Rừng Thì Thầm để chứng minh bản thân.",
+  },
+  {
+    levelRequirement: 3,
+    title: "Chương 2 — Bóng Tối Trong Rừng Sâu",
+    npc: "Thợ Săn Lyra",
+    dialogue:
+      "\"Lũ Sói Bóng Tối gần đây hung hãn khác thường. Có kẻ nào đó đang kích động chúng từ sâu trong rừng. Ta cần một Người Thức Tỉnh đủ can đảm để tìm hiểu.\"",
+    objective: "Đánh bại Sói Bóng Tối và thu thập Da Sói Rừng.",
+  },
+  {
+    levelRequirement: 6,
+    title: "Chương 3 — Con Đường Đến Hầm Mộ",
+    npc: "Học Giả Ren",
+    dialogue:
+      "\"Ta đã giải mã được một phần bản đồ cổ. Hầm Mộ Đá Vỡ không phải nơi chôn cất — đó là một trong những nơi Lõi Nguyên Tố vỡ ra đầu tiên. Nếu con đủ mạnh, hãy đi tìm sự thật.\"",
+    objective: "Đạt cấp độ 8 và bước vào Hầm Mộ Đá Vỡ.",
+  },
+  {
+    levelRequirement: 9,
+    title: "Chương 4 — Vệ Thần Cuối Cùng",
+    npc: "(không có NPC — gặp trực tiếp trong hầm mộ)",
+    dialogue:
+      "Vệ Thần Mộ Đá thức dậy từ giấc ngủ ngàn năm: \"Kẻ mang mảnh vỡ... ngươi đến để lấy nốt phần còn lại sao?\"",
+    objective: "Đánh bại Vệ Thần Mộ Đá để mở khóa khu vực sâu hơn của hầm mộ.",
+  },
+  {
+    levelRequirement: 11,
+    title: "Chương 5 — Tro Tàn Của Sự Thật",
+    npc: "Hồn Ma Tro Tàn",
+    dialogue:
+      "\"Ta từng là một Người Thức Tỉnh, như ngươi... Đại Vỡ Vụn không phải tai nạn. Có kẻ đã cố tình phá vỡ 5 Lõi Nguyên Tố. Hãy tìm ra ai, trước khi lịch sử lặp lại.\"",
+    objective: "Đánh bại Hồn Ma Tro Tàn và tìm Mảnh Vỡ Lõi Lửa — chương tiếp theo đang được biên soạn.",
+  },
+];
+
+const FACTIONS = [
+  { name: "Hội Bảo Tồn", desc: "Tin rằng các mảnh vỡ nên được thu thập và niêm phong để tránh thảm họa lặp lại." },
+  { name: "Liên Minh Thức Tỉnh", desc: "Cho rằng sức mạnh của mảnh vỡ nên được dùng để tái thiết Etheria, không phải giấu đi." },
+  { name: "Chợ Đen Vực Sâu", desc: "Phe phái trung lập kiểm soát phần lớn giao dịch mảnh vỡ ngoài luồng — nguồn gốc của hệ thống chợ giao dịch trong game." },
+];
+
+interface Props {
+  characterLevel: number;
+}
+
+export function StoryTab({ characterLevel }: Props) {
+  return (
+    <div>
+      <h1 className="page-title">Tàn Tích Etheria</h1>
+      <p className="page-subtitle">Thế giới quan & cốt truyện chính</p>
+
+      <div className="zone-card" style={{ marginBottom: 28 }}>
+        <div className="zone-card__name">Thế giới sau Đại Vỡ Vụn</div>
+        <div className="zone-card__desc" style={{ lineHeight: 1.7 }}>
+          300 năm trước, 5 Đại Tộc từng cai trị Etheria trong hòa bình, mỗi tộc nắm giữ một Lõi Nguyên Tố: Lửa,
+          Nước, Đất, Gió và Hư Không. Rồi Đại Vỡ Vụn xảy ra — không ai biết vì sao — và 5 Lõi Nguyên Tố vỡ thành
+          hàng ngàn mảnh nhỏ, rải khắp thế giới. Những mảnh vỡ ấy giờ đây là thứ quý giá nhất Etheria: chúng ban
+          sức mạnh cho bất kỳ ai tìm thấy, biến người đó thành một <em>Người Thức Tỉnh</em>. Bạn là một trong số
+          họ.
+        </div>
+      </div>
+
+      <h2 style={{ fontSize: 16, marginBottom: 14, color: "var(--text-muted)" }}>Các phe phái</h2>
+      <div className="zone-grid">
+        {FACTIONS.map((f) => (
+          <div className="zone-card" key={f.name}>
+            <div className="zone-card__name" style={{ fontSize: 15 }}>{f.name}</div>
+            <div className="zone-card__desc">{f.desc}</div>
+          </div>
+        ))}
+      </div>
+
+      <h2 style={{ fontSize: 16, margin: "28px 0 14px", color: "var(--text-muted)" }}>Nhiệm vụ chính tuyến</h2>
+      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        {QUEST_STEPS.map((q) => {
+          const unlocked = characterLevel >= q.levelRequirement;
+          return (
+            <div
+              key={q.title}
+              className="zone-card"
+              style={{ opacity: unlocked ? 1 : 0.45 }}
+            >
+              <div className="zone-card__name" style={{ fontSize: 15 }}>
+                {q.title} {!unlocked && <span className="tag" style={{ marginLeft: 8 }}>Cần cấp {q.levelRequirement}</span>}
+              </div>
+              {unlocked && (
+                <>
+                  <div style={{ fontSize: 12, color: "var(--text-faint)", margin: "6px 0" }}>{q.npc}</div>
+                  <div className="zone-card__desc" style={{ fontStyle: "italic" }}>{q.dialogue}</div>
+                  <div style={{ marginTop: 10, fontSize: 12, color: "var(--accent-shard)" }}>🎯 {q.objective}</div>
+                </>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
