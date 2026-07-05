@@ -53,7 +53,18 @@ export const NPC_SPRITES: Record<string, { matrix: SpriteMatrix; palette: Record
   },
 };
 
-export const MONSTER_SPRITES: Record<string, { matrix: SpriteMatrix; palette: Record<string, string> }> = {
+export type MonsterSpriteKey =
+  | "slime"
+  | "wolf"
+  | "guardian"
+  | "wraith"
+  | "stalker"
+  | "abyssal_hunter"
+  | "rift_construct"
+  | "wisp"
+  | "titan";
+
+export const MONSTER_SPRITES: Record<MonsterSpriteKey, { matrix: SpriteMatrix; palette: Record<string, string> }> = {
   slime: {
     matrix: [
       "........",

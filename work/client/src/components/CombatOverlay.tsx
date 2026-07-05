@@ -25,11 +25,13 @@ interface BossPreview {
   respawnInSeconds: number;
 }
 
+import type { MonsterSpriteKey } from "../data/sprites";
+
 interface Props {
   characterId: string;
   monsterId: string;
   monsterName: string;
-  spriteKey: "slime" | "wolf" | "guardian" | "wraith" | "stalker" | "wisp" | "titan";
+  spriteKey: MonsterSpriteKey;
   isBoss?: boolean;
   onClose: (victory: boolean) => void;
   onChange: () => void;
