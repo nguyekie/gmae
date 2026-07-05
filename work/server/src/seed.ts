@@ -385,8 +385,9 @@ async function seed() {
       `UPDATE boss_state bs SET max_hp = m.hp, current_hp = LEAST(bs.current_hp, m.hp)
        FROM monsters m WHERE bs.monster_id = m.id`
     );
-  } catch (e) {
-    console.warn('Không thể đồng bộ boss_state:', e.message ?? e);
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : String(e);
+    console.warn('Không thể đồng bộ boss_state:', message);
   }
 
   console.log("Đang seed quests...");
