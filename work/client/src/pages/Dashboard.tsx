@@ -59,6 +59,7 @@ export function Dashboard() {
   const [incomingChallenge, setIncomingChallenge] = useState<IncomingChallenge | null>(null);
   const [pvpResult, setPvpResult] = useState<PvpResultData | null>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   function pushToast(message: string, tone: "info" | "error" = "info") {
     const id = `${Date.now()}_${Math.random()}`;
@@ -146,7 +147,11 @@ export function Dashboard() {
 
   return (
     <div className="app-shell">
-      <aside className="sidebar">
+      <button className="mobile-menu-toggle" onClick={() => setSidebarOpen((open) => !open)} aria-label="Mở menu">
+        ☰ Menu
+      </button>
+      <div className={`sidebar-backdrop ${sidebarOpen ? "sidebar-backdrop--open" : ""}`} onClick={() => setSidebarOpen(false)} />
+      <aside className={`sidebar ${sidebarOpen ? "sidebar--open" : ""}`}>
         <div className="sidebar__brand">Tàn Tích Etheria</div>
 
         <div className="sidebar__char">
@@ -164,7 +169,7 @@ export function Dashboard() {
           <div className="sidebar__gold">💰 {character.gold.toLocaleString("vi-VN")} vàng</div>
         </div>
 
-        <nav className="nav-list">
+        <nav className="nav-list" onClick={() => setSidebarOpen(false)}>
           <NavLink to={`/play/${characterId}`} end className={({ isActive }) => `nav-item ${isActive ? "nav-item--active" : ""}`}>
             🧍 Nhân vật
           </NavLink>
