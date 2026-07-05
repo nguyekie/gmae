@@ -1338,3 +1338,12 @@
   margin-bottom: 16px;
   text-align: center;
 }
+
+.alert {
+  border: 1px solid var(--surface-line);
+  background: rgba(201, 162, 75, 0.1);
+  color: var(--text-main);
+  padding: 10px 12px;
+  margin-bottom: 16px;
+  font-size: 13px;
+}

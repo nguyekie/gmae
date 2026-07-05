@@ -37,6 +37,12 @@ interface ItemCardProps {
 }
 
 export function ItemCard({ item, footer, onClick }: ItemCardProps) {
+  const instanceBonuses = Array.isArray(item.instance_stats?.bonuses)
+    ? item.instance_stats.bonuses
+    : item.instance_stats?.special
+    ? [item.instance_stats.special]
+    : [];
+
   return (
     <div
       className={`item-card item-card--${item.rarity}`}
@@ -69,8 +75,12 @@ export function ItemCard({ item, footer, onClick }: ItemCardProps) {
       )}
       {item.instance_stats && (
         <div className="item-card__stats item-card__stats--instance">
-              {item.instance_stats.special ? (
-                <div className="item-card__special">{item.instance_stats.special.stat.toUpperCase()} +{item.instance_stats.special.bonus} <small>(tùy biến)</small></div>
+              {instanceBonuses.length > 0 ? (
+                instanceBonuses.map((bonus: any) => (
+                  <div className="item-card__special" key={bonus.stat}>
+                    {String(bonus.stat).toUpperCase()} +{bonus.bonus} <small>(tùy biến)</small>
+                  </div>
+                ))
               ) : (
                 Object.entries(item.instance_stats).map(([k, v]) => (
                   <span key={k} className="item-card__stat">{k}: {JSON.stringify(v)}</span>

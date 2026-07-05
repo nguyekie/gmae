@@ -34,15 +34,23 @@ const itemTypes = [
   { id: "iron_greatsword", name: "Đại Kiếm Sắt", rarity: "rare", slot: "weapon", base_stats: { atk: 16 }, level_requirement: 5, description: "Vũ khí tiêu chuẩn của lính canh Etheria trước Đại Vỡ Vụn." },
   { id: "mystic_orb", name: "Cầu Pháp Bí Ẩn", rarity: "rare", slot: "weapon", base_stats: { atk: 13, mp: 10 }, level_requirement: 5 },
   { id: "swift_bow", name: "Cung Gió Lốc", rarity: "rare", slot: "weapon", base_stats: { atk: 14, spd: 3 }, level_requirement: 5 },
+  { id: "moonlit_saber", name: "Đao Ánh Trăng", rarity: "rare", slot: "weapon", base_stats: { atk: 18, spd: 4 }, level_requirement: 7, description: "Thanh đao nhẹ, hợp với lối đánh tốc độ." },
+  { id: "warded_mail", name: "Giáp Hộ Vệ", rarity: "rare", slot: "armor", base_stats: { def: 12, hp: 35 }, level_requirement: 7, description: "Giáp khắc phù văn bảo vệ căn bản." },
   { id: "titan_gauntlets", name: "Găng Tay Titan", rarity: "epic", slot: "gloves", base_stats: { atk: 5, def: 10 }, level_requirement: 13 },
   { id: "voidsteel_helm", name: "Mũ Thép Hư Không", rarity: "epic", slot: "helmet", base_stats: { def: 12, hp: 30 }, level_requirement: 13 },
   // --- New high-tier wearable gear (level 11+) dropped từ quái, cũng có thể mua tại shop với giá cao ---
   { id: "tempest_gauntlets", name: "Găng Tay Bão Tố", rarity: "epic", slot: "gloves", base_stats: { atk: 12, spd: 4, def: 6 }, level_requirement: 11, description: "Găng tay thuần thục năng lượng bão tố — tăng sát thương và tốc độ tấn công.", stackable: false },
   { id: "aether_crown", name: "Mũ Vương Aether", rarity: "epic", slot: "helmet", base_stats: { def: 10, hp: 50, mp: 20 }, level_requirement: 11, description: "Mũ đội phát sáng, khuếch đại liên kết với Ether — dành cho người đủ mạnh.", stackable: false },
   { id: "drakehide_gloves", name: "Găng Da Rồng", rarity: "epic", slot: "gloves", base_stats: { atk: 9, def: 9, fire_dmg: 6 }, level_requirement: 11, description: "Găng tay được khâu từ da Rồng, bền và tăng sát thương lửa.", stackable: false },
+  { id: "stormcaller_staff", name: "Trượng Gọi Bão", rarity: "epic", slot: "weapon", base_stats: { atk: 34, mp: 35, spd: 4 }, level_requirement: 12, description: "Trượng dẫn sét Aether, mạnh hơn vũ khí trung cấp rõ rệt.", stackable: false },
+  { id: "emberheart_plate", name: "Giáp Tim Than", rarity: "epic", slot: "armor", base_stats: { def: 24, hp: 90, atk: 4 }, level_requirement: 13, description: "Giáp nặng giữ nhiệt từ lõi lửa vỡ.", stackable: false },
   { id: "shard_of_silence", name: "Mảnh Vỡ Tĩnh Lặng", rarity: "legendary", slot: "trinket", base_stats: { atk: 10, def: 10, mp: 20 }, level_requirement: 15, description: "Phần thưởng cho kẻ dám đối mặt sự thật về Đại Vỡ Vụn." },
+  { id: "starfall_bow", name: "Cung Sao Rơi", rarity: "legendary", slot: "weapon", base_stats: { atk: 52, spd: 10, hp: 80 }, level_requirement: 17, description: "Mũi tên rơi xuống như sao băng, dành cho thợ săn cuối game.", stackable: false },
+  { id: "oracle_veil", name: "Khăn Choàng Tiên Tri", rarity: "legendary", slot: "trinket", base_stats: { atk: 18, def: 18, mp: 80, spd: 5 }, level_requirement: 18, description: "Di vật giúp người mang đọc được nhịp rung của mảnh vỡ.", stackable: false },
   // --- New SSS+ boss trophy weapon (apex) and additional high-end items ---
-  { id: "apex_oblivion", name: "Hủy Diệt Đỉnh Nguyên (SSS+)", rarity: "sss_plus", slot: "weapon", base_stats: { atk: 72, spd: 6, hp: 200 }, level_requirement: 20, description: "Vũ khí huyền thoại mang sức công phá của kẻ hủy diệt — có chỉ số đặc biệt và kỹ năng riêng.", stackable: false, special: { passive: { boss_drop_rate_bonus: 0.01 }, skill: { id: "void_cleave", name: "Xén Hư Không", description: "Đòn tấn công mạnh phá vỡ lá chắn kẻ thù, tăng sát thương lên quái boss trong 6s (thể hiện bằng hiệu ứng)." } } },
+  { id: "apex_oblivion", name: "Hủy Diệt Đỉnh Nguyên (SSS+)", rarity: "sss_plus", slot: "weapon", base_stats: { atk: 180, def: 36, spd: 22, hp: 720, mp: 260 }, level_requirement: 22, description: "Vũ khí tuyệt đỉnh vượt xa đồ huyền thoại: sát thương, phòng thủ, sinh lực và tốc độ đều được khuếch đại cực hạn.", stackable: false, special: { passive: { boss_drop_rate_bonus: 0.04, boss_damage_bonus: 0.75 }, skill: { id: "void_cleave", name: "Xén Hư Không", description: "Đòn chém xé lõi không gian, tăng mạnh sát thương lên boss và quái tinh anh." } } },
+  { id: "celestial_judgement", name: "Thiên Phán Tuyệt Đỉnh (SSS+)", rarity: "sss_plus", slot: "weapon", base_stats: { atk: 165, def: 48, spd: 18, hp: 860, mp: 320 }, level_requirement: 23, description: "Thánh khí SSS+ thiên về sinh tồn và bộc phát sát thương ổn định.", stackable: false, special: { passive: { boss_drop_rate_bonus: 0.035, elite_damage_bonus: 0.5 }, skill: { id: "star_sentence", name: "Tinh Phán", description: "Tập trung ánh sao thành đòn kết án, đặc biệt hiệu quả trước boss cuối." } } },
+  { id: "astral_aegis", name: "Thánh Giáp Tinh Tú (SSS+)", rarity: "sss_plus", slot: "armor", base_stats: { def: 128, hp: 1250, mp: 180, atk: 36, spd: 10 }, level_requirement: 23, description: "Giáp SSS+ dành cho người muốn đứng vững trước các boss mạnh nhất.", stackable: false, special: { passive: { damage_reduction: 0.12, boss_drop_rate_bonus: 0.02 } } },
   { id: "rift_core", name: "Tinh Hoa Rạn Nứt", rarity: "epic", slot: "material", base_stats: {}, level_requirement: 14, stackable: true, description: "Mảnh lõi thu được từ các vật thể rạn nứt, dùng để rèn vũ khí." },
   { id: "abyssal_edge", name: "Bộ Lưỡi Vực Thẳm", rarity: "epic", slot: "weapon", base_stats: { atk: 36, spd: 3 }, level_requirement: 14, description: "Lưỡi kiếm được tinh luyện từ bụi Hư Không." },
 
@@ -50,11 +58,20 @@ const itemTypes = [
   { id: "potion_minor_heal", name: "Bình Máu Nhỏ", rarity: "common", slot: "consumable", base_stats: { heal: 40 }, level_requirement: 1, stackable: true },
   { id: "potion_minor_mana", name: "Bình Mana Nhỏ", rarity: "common", slot: "consumable", base_stats: { mana: 30 }, level_requirement: 1, stackable: true },
   { id: "elixir_of_vigor", name: "Linh Dược Sinh Lực", rarity: "rare", slot: "consumable", base_stats: { heal: 100, mana: 50 }, level_requirement: 10, stackable: true, description: "Hồi phục mạnh cho các trận chiến khó, đặc biệt là boss." },
+  { id: "potion_greater_heal", name: "Bình Máu Lớn", rarity: "rare", slot: "consumable", base_stats: { heal: 180 }, level_requirement: 8, stackable: true, description: "Hồi phục HP mạnh cho giai đoạn giữa game." },
+  { id: "potion_greater_mana", name: "Bình Mana Lớn", rarity: "rare", slot: "consumable", base_stats: { mana: 140 }, level_requirement: 8, stackable: true, description: "Hồi phục MP mạnh cho các trận kéo dài." },
+  { id: "phoenix_elixir", name: "Linh Dược Phượng Hoàng", rarity: "epic", slot: "consumable", base_stats: { heal: 420, mana: 220 }, level_requirement: 15, stackable: true, description: "Dược phẩm cao cấp cho boss và map cuối." },
 
   // --- Nguyên liệu chế tạo ---
   { id: "wolf_pelt", name: "Da Sói Rừng", rarity: "common", slot: "material", base_stats: {}, level_requirement: 1, stackable: true },
   { id: "cracked_stone_core", name: "Lõi Đá Nứt", rarity: "rare", slot: "material", base_stats: {}, level_requirement: 1, stackable: true },
   { id: "abyssal_dust", name: "Bụi Hư Không", rarity: "rare", slot: "material", base_stats: {}, level_requirement: 1, stackable: true, description: "Tàn dư mịn như tro của những sinh vật thuộc về Hư Không." },
+  { id: "ash_iron", name: "Sắt Tro Tàn", rarity: "rare", slot: "material", base_stats: {}, level_requirement: 1, stackable: true, description: "Kim loại nóng âm ỉ, dùng cho các công thức rèn cuối tuyến Đồng Bằng Tro Tàn." },
+  { id: "oath_sigil", name: "Ấn Lời Thề", rarity: "epic", slot: "material", base_stats: {}, level_requirement: 1, stackable: true, description: "Ấn ký còn sót lại từ các hiệp sĩ bảo vệ lò rèn cổ." },
+  { id: "tempered_rift_core", name: "Lõi Rạn Tôi Luyện", rarity: "epic", slot: "material", base_stats: {}, level_requirement: 1, stackable: true, description: "Tinh Hoa Rạn Nứt đã được ổn định để rèn trang bị cao cấp." },
+  { id: "companion_charm", name: "Bùa Đồng Hành", rarity: "epic", slot: "material", base_stats: {}, level_requirement: 1, stackable: true, description: "Bùa hiệu dùng để ký khế ước với một trợ thủ đi cùng." },
+  { id: "eclipse_blade", name: "Kiếm Nhật Thực", rarity: "legendary", slot: "weapon", base_stats: { atk: 78, def: 12, spd: 8, hp: 120 }, level_requirement: 21, description: "Vũ khí rèn từ Sắt Tro Tàn, dành cho chương 9 mà không cần phụ thuộc boss thế giới.", stackable: false },
+  { id: "sentinel_plate", name: "Giáp Vệ Ước", rarity: "legendary", slot: "armor", base_stats: { def: 62, hp: 260, atk: 14, mp: 70 }, level_requirement: 21, description: "Giáp của đội vệ ước lò rèn, cân bằng giữa thủ và tài nguyên chiến đấu.", stackable: false },
 ];
 
 const monsters = [
@@ -84,8 +101,10 @@ const monsters = [
     gold_max: 20,
     drop_table: [
       { item_type_id: "wolf_fang_dagger", chance: 0.12 },
+      { item_type_id: "moonlit_saber", chance: 0.08 },
       { item_type_id: "wolf_pelt", chance: 0.5 },
       { item_type_id: "leather_vest", chance: 0.15 },
+      { item_type_id: "warded_mail", chance: 0.06 },
     ],
   },
   {
@@ -119,7 +138,9 @@ const monsters = [
     drop_table: [
       { item_type_id: "flame_shard_blade", chance: 0.05 },
       { item_type_id: "fire_shard_fragment", chance: 0.02 },
-      { item_type_id: "tempest_gauntlets", chance: 0.03 }
+      { item_type_id: "tempest_gauntlets", chance: 0.03 },
+      { item_type_id: "stormcaller_staff", chance: 0.05 },
+      { item_type_id: "emberheart_plate", chance: 0.04 }
     ],
   },
   // Quái thường trấn giữ Vực Thẳm Hư Không (trước cửa boss)
@@ -137,7 +158,8 @@ const monsters = [
     drop_table: [
       { item_type_id: "titan_gauntlets", chance: 0.06 },
       { item_type_id: "abyssal_dust", chance: 0.6 },
-      { item_type_id: "drakehide_gloves", chance: 0.04 }
+      { item_type_id: "drakehide_gloves", chance: 0.04 },
+      { item_type_id: "stormcaller_staff", chance: 0.08 }
     ],
   },
   // New monsters near the rift fields
@@ -153,7 +175,9 @@ const monsters = [
     gold_min: 140,
     gold_max: 240,
     drop_table: [
-      { item_type_id: "abyssal_edge", chance: 0.18 },
+      { item_type_id: "abyssal_edge", chance: 0.36 },
+      { item_type_id: "ether_spear", chance: 0.16 },
+      { item_type_id: "starfall_bow", chance: 0.08 },
       { item_type_id: "rift_core", chance: 0.45 },
     ],
   },
@@ -162,16 +186,18 @@ const monsters = [
     name: "Cỗ Máy Rạn Nứt",
     zone: "rift_fields",
     level: 18,
-    hp: 1700,
-    atk: 108,
-    def: 38,
+    hp: 950,
+    atk: 72,
+    def: 24,
     exp_reward: 1050,
     gold_min: 320,
     gold_max: 620,
     drop_table: [
-      { item_type_id: "apex_oblivion", chance: 0.03 },
+      { item_type_id: "titan_sunderer", chance: 0.18 },
       { item_type_id: "rift_core", chance: 0.6 },
-      { item_type_id: "abyssal_edge", chance: 0.12 },
+      { item_type_id: "abyssal_edge", chance: 0.38 },
+      { item_type_id: "void_reaver", chance: 0.18 },
+      { item_type_id: "oracle_veil", chance: 0.1 },
     ],
   },
   {
@@ -187,7 +213,9 @@ const monsters = [
     gold_max: 300,
     drop_table: [
       { item_type_id: "rift_core", chance: 0.55 },
-      { item_type_id: "abyssal_edge", chance: 0.12 },
+      { item_type_id: "abyssal_edge", chance: 0.34 },
+      { item_type_id: "ether_spear", chance: 0.22 },
+      { item_type_id: "starfall_bow", chance: 0.14 },
     ],
   },
   {
@@ -203,7 +231,65 @@ const monsters = [
     gold_max: 320,
     drop_table: [
       { item_type_id: "elixir_of_vigor", chance: 0.22 },
+      { item_type_id: "void_reaver", chance: 0.22 },
+      { item_type_id: "abyssal_edge", chance: 0.18 },
+      { item_type_id: "oracle_veil", chance: 0.12 },
       { item_type_id: "rift_core", chance: 0.45 },
+    ],
+  },
+  {
+    id: "ashbound_sentinel",
+    name: "Vệ Binh Tro Buộc",
+    zone: "oathforge_depths",
+    level: 21,
+    hp: 1320,
+    atk: 86,
+    def: 34,
+    exp_reward: 820,
+    gold_min: 240,
+    gold_max: 380,
+    drop_table: [
+      { item_type_id: "ash_iron", chance: 0.85 },
+      { item_type_id: "oath_sigil", chance: 0.18 },
+      { item_type_id: "starfall_bow", chance: 0.1 },
+      { item_type_id: "potion_greater_heal", chance: 0.22 },
+    ],
+  },
+  {
+    id: "shard_smith_echo",
+    name: "Dư Âm Thợ Rèn",
+    zone: "oathforge_depths",
+    level: 22,
+    hp: 1180,
+    atk: 92,
+    def: 28,
+    exp_reward: 860,
+    gold_min: 260,
+    gold_max: 420,
+    drop_table: [
+      { item_type_id: "ash_iron", chance: 0.9 },
+      { item_type_id: "tempered_rift_core", chance: 0.2 },
+      { item_type_id: "oracle_veil", chance: 0.08 },
+      { item_type_id: "potion_greater_mana", chance: 0.22 },
+    ],
+  },
+  {
+    id: "oathbreaker_knight",
+    name: "Kỵ Sĩ Bội Ước",
+    zone: "oathforge_depths",
+    level: 23,
+    hp: 1850,
+    atk: 104,
+    def: 38,
+    exp_reward: 1180,
+    gold_min: 420,
+    gold_max: 680,
+    drop_table: [
+      { item_type_id: "ash_iron", chance: 1 },
+      { item_type_id: "oath_sigil", chance: 0.35 },
+      { item_type_id: "tempered_rift_core", chance: 0.28 },
+      { item_type_id: "titan_sunderer", chance: 0.12 },
+      { item_type_id: "companion_charm", chance: 0.08 },
     ],
   },
   {
@@ -220,7 +306,10 @@ const monsters = [
     is_boss: true,
     respawn_seconds: 1200,
     drop_table: [
-      { item_type_id: "apex_oblivion", chance: 0.05 },
+      { item_type_id: "apex_oblivion", chance: 0.04 },
+      { item_type_id: "celestial_judgement", chance: 0.025 },
+      { item_type_id: "astral_aegis", chance: 0.025 },
+      { item_type_id: "titan_sunderer", chance: 0.35 },
       { item_type_id: "water_shard_fragment", chance: 0.18 },
       { item_type_id: "rift_core", chance: 1 },
     ],
@@ -238,6 +327,8 @@ const monsters = [
     gold_max: 110,
     drop_table: [
       { item_type_id: "voidsteel_helm", chance: 0.06 },
+      { item_type_id: "void_reaver", chance: 0.12 },
+      { item_type_id: "starfall_bow", chance: 0.05 },
       { item_type_id: "abyssal_dust", chance: 0.6 },
       { item_type_id: "aether_crown", chance: 0.03 }
     ],
@@ -259,7 +350,9 @@ const monsters = [
     respawn_seconds: 900, // 15 phút sau khi bị hạ mới hồi sinh lại
     drop_table: [
       { item_type_id: "colossus_plate", chance: 0.15 },
-      { item_type_id: "abyssal_fang_blade", chance: 0.1 },
+      { item_type_id: "abyssal_fang_blade", chance: 0.22 },
+      { item_type_id: "titan_sunderer", chance: 0.18 },
+      { item_type_id: "oracle_veil", chance: 0.12 },
       { item_type_id: "abyssal_dust", chance: 1 },
     ],
   },
@@ -379,7 +472,7 @@ const quests = [
     objectives: [{ type: "kill", targetId: "rift_construct", count: 1, label: "Cỗ Máy Rạn Nứt" }],
     reward_exp: 2200,
     reward_gold: 1400,
-    reward_items: ["apex_oblivion"],
+    reward_items: ["titan_sunderer"],
   },
   {
     id: "quest_ashfall_oath_vera",
@@ -413,33 +506,69 @@ const quests = [
   },
   {
     id: "quest_fallen_paladin_vera",
-    title: "Chương 9 — Thánh Kỵ Sĩ Sa Ngã",
-    zone: "ashfall_plains",
+    title: "Chương 9 — Lò Rèn Lời Thề",
+    zone: "oathforge_depths",
     giver_npc_id: "npc_vera",
     level_requirement: 21,
     prerequisite_quest_id: "quest_ashfall_oath_vera" as string | null,
-    dialogue_offer: "Một hiệp sĩ từng bảo vệ Etheria đã bị mảnh vỡ ăn mòn. Hạ hắn xuống là cách nhân từ cuối cùng.",
-    dialogue_progress: "Thánh Kỵ Sĩ Sa Ngã vẫn còn đứng giữa tro tàn. Hãy chuẩn bị kỹ, đó là một trận đánh dài.",
-    dialogue_complete: "Sự yên nghỉ cuối cùng đã đến với hắn. Cả đồng bằng vừa thở ra sau nhiều năm bị nguyền rủa.",
-    objectives: [{ type: "kill", targetId: "fallen_paladin", count: 1, label: "Thánh Kỵ Sĩ Sa Ngã" }],
+    dialogue_offer: "Ta sẽ không bắt ngươi đặt tiến độ chính tuyến vào một boss thế giới. Bên dưới đồng bằng có Lò Rèn Lời Thề, nơi các kỵ sĩ bội ước đang gom mảnh vỡ để phá phong ấn. Hãy dọn đường và thu lại ấn ký của họ.",
+    dialogue_progress: "Kỵ Sĩ Bội Ước vẫn tuần tra quanh lò rèn. Đừng để chúng gom đủ nguyên liệu mở xiềng phong ấn.",
+    dialogue_complete: "Tốt. Lò rèn cổ đã dịu lại. Từ giờ ngươi có thể dùng nguyên liệu ở đây để rèn trang bị và ký khế ước với trợ thủ.",
+    objectives: [{ type: "kill", targetId: "oathbreaker_knight", count: 2, label: "Kỵ Sĩ Bội Ước" }],
     reward_exp: 3600,
     reward_gold: 2600,
-    reward_items: ["apex_oblivion"],
+    reward_items: ["companion_charm", "tempered_rift_core"],
   },
   {
     id: "quest_fallen_paladin_kael",
-    title: "Chương 9 — Thánh Kỵ Sĩ Sa Ngã",
-    zone: "ashfall_plains",
+    title: "Chương 9 — Lò Rèn Lời Thề",
+    zone: "oathforge_depths",
     giver_npc_id: "npc_kael",
     level_requirement: 21,
     prerequisite_quest_id: "quest_ashfall_oath_kael" as string | null,
-    dialogue_offer: "Nếu muốn tái thiết Etheria, trước hết ta phải đối mặt với những người đã thất bại trước sức mạnh ấy. Hạ Thánh Kỵ Sĩ Sa Ngã.",
-    dialogue_progress: "Hắn vẫn đứng đó, như lời cảnh báo sống về cái giá của tham vọng. Đừng để lời cảnh báo đó thành xiềng xích.",
-    dialogue_complete: "Ngươi đã vượt qua nỗi sợ của thời đại cũ. Giờ chúng ta có thể viết tiếp chương mới.",
-    objectives: [{ type: "kill", targetId: "fallen_paladin", count: 1, label: "Thánh Kỵ Sĩ Sa Ngã" }],
+    dialogue_offer: "Boss thế giới là chuyện của những kẻ săn chiến tích. Chính tuyến cần một mục tiêu rõ hơn: Lò Rèn Lời Thề còn giữ kỹ thuật tôi luyện mảnh vỡ. Hạ đội kỵ sĩ bội ước, rồi ta dùng thứ họ canh giữ để tái thiết.",
+    dialogue_progress: "Kỵ Sĩ Bội Ước vẫn giữ lò rèn. Hạ chúng, lấy lại quyền kiểm soát công nghệ tôi luyện.",
+    dialogue_complete: "Hoàn hảo. Lò rèn thuộc về người còn sống. Hãy dùng nguyên liệu này để tạo trang bị mới và gọi một trợ thủ đi cùng.",
+    objectives: [{ type: "kill", targetId: "oathbreaker_knight", count: 2, label: "Kỵ Sĩ Bội Ước" }],
     reward_exp: 3600,
     reward_gold: 2600,
-    reward_items: ["apex_oblivion"],
+    reward_items: ["companion_charm", "tempered_rift_core"],
+  },
+];
+
+const companionTypes = [
+  {
+    id: "lyra_falcon",
+    name: "Ưng Trinh Sát Lyra",
+    role: "Sát thương nhanh",
+    description: "Một trợ thủ linh hoạt, tăng ATK và SPD cho các trận farm quái thường.",
+    bonuses: { atk: 18, spd: 5 },
+    recruit_cost_gold: 1800,
+    required_items: [{ itemTypeId: "companion_charm", name: "Bùa Đồng Hành", quantity: 1 }],
+  },
+  {
+    id: "rift_sprite",
+    name: "Linh Thể Rạn Nứt",
+    role: "Pháp lực",
+    description: "Sinh thể nhỏ ổn định dòng mảnh vỡ, tăng MP và một phần sát thương.",
+    bonuses: { atk: 12, mp: 120, spd: 2 },
+    recruit_cost_gold: 2400,
+    required_items: [
+      { itemTypeId: "companion_charm", name: "Bùa Đồng Hành", quantity: 1 },
+      { itemTypeId: "rift_core", name: "Tinh Hoa Rạn Nứt", quantity: 2 },
+    ],
+  },
+  {
+    id: "oath_guardian",
+    name: "Hộ Vệ Lời Thề",
+    role: "Chống chịu",
+    description: "Một vệ binh cổ được tái kích hoạt, tăng mạnh HP và DEF.",
+    bonuses: { hp: 360, def: 28 },
+    recruit_cost_gold: 3200,
+    required_items: [
+      { itemTypeId: "companion_charm", name: "Bùa Đồng Hành", quantity: 1 },
+      { itemTypeId: "oath_sigil", name: "Ấn Lời Thề", quantity: 1 },
+    ],
   },
 ];
 
@@ -449,7 +578,11 @@ async function seed() {
     await pool.query(
       `INSERT INTO item_types (id, name, rarity, slot, base_stats, level_requirement, tradable, stackable, description, special)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
-       ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, base_stats = EXCLUDED.base_stats, rarity = EXCLUDED.rarity, special = EXCLUDED.special`,
+       ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, rarity = EXCLUDED.rarity,
+         slot = EXCLUDED.slot, base_stats = EXCLUDED.base_stats,
+         level_requirement = EXCLUDED.level_requirement, tradable = EXCLUDED.tradable,
+         stackable = EXCLUDED.stackable, description = EXCLUDED.description,
+         special = EXCLUDED.special`,
       [
         item.id,
         item.name,
@@ -470,7 +603,10 @@ async function seed() {
     await pool.query(
       `INSERT INTO monsters (id, name, zone, level, hp, atk, def, exp_reward, gold_min, gold_max, drop_table, is_boss, respawn_seconds)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
-       ON CONFLICT (id) DO UPDATE SET hp = EXCLUDED.hp, atk = EXCLUDED.atk, def = EXCLUDED.def,
+       ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, zone = EXCLUDED.zone,
+         level = EXCLUDED.level, hp = EXCLUDED.hp, atk = EXCLUDED.atk, def = EXCLUDED.def,
+         exp_reward = EXCLUDED.exp_reward, gold_min = EXCLUDED.gold_min, gold_max = EXCLUDED.gold_max,
+         drop_table = EXCLUDED.drop_table,
          is_boss = EXCLUDED.is_boss, respawn_seconds = EXCLUDED.respawn_seconds`,
       [
         monster.id,
@@ -510,7 +646,9 @@ async function seed() {
                             reward_exp, reward_gold, reward_items)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
        ON CONFLICT (id) DO UPDATE SET
-         title = EXCLUDED.title, dialogue_offer = EXCLUDED.dialogue_offer,
+         title = EXCLUDED.title, zone = EXCLUDED.zone, giver_npc_id = EXCLUDED.giver_npc_id,
+         level_requirement = EXCLUDED.level_requirement, prerequisite_quest_id = EXCLUDED.prerequisite_quest_id,
+         dialogue_offer = EXCLUDED.dialogue_offer,
          dialogue_progress = EXCLUDED.dialogue_progress, dialogue_complete = EXCLUDED.dialogue_complete,
          objectives = EXCLUDED.objectives, reward_exp = EXCLUDED.reward_exp,
          reward_gold = EXCLUDED.reward_gold, reward_items = EXCLUDED.reward_items`,
@@ -546,18 +684,27 @@ async function seedShop() {
   const shopId = shopRes.rows[0].id;
 
   const shopItems = [
-    { item_type_id: 'potion_minor_heal', price: 10, stock: 100 },
-    { item_type_id: 'potion_minor_mana', price: 12, stock: 80 },
+    { item_type_id: 'potion_minor_heal', price: 10, stock: 9999 },
+    { item_type_id: 'potion_minor_mana', price: 12, stock: 9999 },
+    { item_type_id: 'potion_greater_heal', price: 55, stock: 9999 },
+    { item_type_id: 'potion_greater_mana', price: 60, stock: 9999 },
+    { item_type_id: 'elixir_of_vigor', price: 60, stock: 9999 },
+    { item_type_id: 'phoenix_elixir', price: 180, stock: 9999 },
     { item_type_id: 'leather_vest', price: 50, stock: 10 },
     { item_type_id: 'iron_greatsword', price: 180, stock: 5 },
     { item_type_id: 'mystic_orb', price: 180, stock: 5 },
     { item_type_id: 'swift_bow', price: 180, stock: 5 },
-    { item_type_id: 'elixir_of_vigor', price: 60, stock: 30 },
+    { item_type_id: 'moonlit_saber', price: 420, stock: 5 },
+    { item_type_id: 'warded_mail', price: 520, stock: 5 },
     // New powerful equipment available in limited quantity for high price
     { item_type_id: 'tempest_gauntlets', price: 6000, stock: 1 },
     { item_type_id: 'aether_crown', price: 7500, stock: 1 },
     { item_type_id: 'drakehide_gloves', price: 5000, stock: 1 },
+    { item_type_id: 'stormcaller_staff', price: 6800, stock: 1 },
+    { item_type_id: 'emberheart_plate', price: 7200, stock: 1 },
     { item_type_id: 'abyssal_edge', price: 9500, stock: 1 },
+    { item_type_id: 'starfall_bow', price: 18000, stock: 1 },
+    { item_type_id: 'oracle_veil', price: 22000, stock: 1 },
     { item_type_id: 'rift_core', price: 1200, stock: 10 },
   ];
   for (const si of shopItems) {
@@ -571,11 +718,39 @@ async function seedShop() {
   console.log('Shop seed hoàn tất');
 }
 
+async function seedCompanions() {
+  console.log("Đang seed companion_types...");
+  for (const companion of companionTypes) {
+    await pool.query(
+      `INSERT INTO companion_types (id, name, role, description, bonuses, recruit_cost_gold, required_items)
+       VALUES ($1,$2,$3,$4,$5,$6,$7)
+       ON CONFLICT (id) DO UPDATE SET
+         name = EXCLUDED.name,
+         role = EXCLUDED.role,
+         description = EXCLUDED.description,
+         bonuses = EXCLUDED.bonuses,
+         recruit_cost_gold = EXCLUDED.recruit_cost_gold,
+         required_items = EXCLUDED.required_items`,
+      [
+        companion.id,
+        companion.name,
+        companion.role,
+        companion.description,
+        JSON.stringify(companion.bonuses),
+        companion.recruit_cost_gold,
+        JSON.stringify(companion.required_items),
+      ]
+    );
+  }
+  console.log("Companion seed hoàn tất");
+}
+
 // Khi chạy trực tiếp, thực hiện seed chính và shop, rồi đóng pool
 async function runAll() {
   try {
     await seed();
     await seedShop();
+    await seedCompanions();
     await pool.end();
     console.log('All seeds done');
   } catch (err) {

@@ -72,11 +72,19 @@ const QUEST_STEPS: QuestStep[] = [
   },
   {
     levelRequirement: 21,
-    title: "Chương 9 — Thánh Kỵ Sĩ Sa Ngã",
-    npc: "(không có NPC — gặp trực tiếp tại Đồng Bằng Tro Tàn)",
+    title: "Chương 9 — Lò Rèn Lời Thề",
+    npc: "Chỉ Huy Vera hoặc Hiệp Sĩ Kael",
     dialogue:
-      "Một hiệp sĩ từng bảo vệ Etheria đã ngã quỵ trước sức mạnh mảnh vỡ hắn tìm thấy — giờ hắn chỉ còn là vỏ bọc hắc ám của lời thề đã vỡ. Dù bạn chọn phe nào ở Chương 8, đây vẫn là việc phải làm.",
-    objective: "Đánh bại Thánh Kỵ Sĩ Sa Ngã — chương tiếp theo đang được biên soạn.",
+      "Bên dưới Đồng Bằng Tro Tàn là Lò Rèn Lời Thề, nơi kỹ thuật tôi luyện mảnh vỡ còn sống sót sau Đại Vỡ Vụn. Các Kỵ Sĩ Bội Ước đang chiếm giữ nơi này để phá phong ấn hoặc độc chiếm sức mạnh.",
+    objective: "Sang Lò Rèn Lời Thề, đánh bại 2 Kỵ Sĩ Bội Ước. Sau chương này, bạn mở vòng chơi rèn đồ và trợ thủ đi cùng.",
+  },
+  {
+    levelRequirement: 22,
+    title: "Nội dung phụ — Boss thế giới",
+    npc: "Thánh Kỵ Sĩ Sa Ngã",
+    dialogue:
+      "Thánh Kỵ Sĩ Sa Ngã vẫn là boss thế giới tại Đồng Bằng Tro Tàn. Hắn không còn khóa tiến độ chính tuyến, nhưng là mục tiêu săn chiến tích, nguyên liệu hiếm và đồ SSS+.",
+    objective: "Đánh boss thế giới khi muốn săn đồ cực hiếm, không bắt buộc cho nhiệm vụ chương chính.",
   },
 ];
 

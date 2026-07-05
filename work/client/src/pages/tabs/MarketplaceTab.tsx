@@ -5,11 +5,13 @@ import { ItemCard } from "../../components/ItemCard";
 interface Listing {
   id: string;
   price: number;
+  seller_character_id: string;
   seller_name: string;
   name: string;
   rarity: "common" | "rare" | "epic" | "legendary" | "sss_plus";
   slot: string;
   base_stats: Record<string, number>;
+  instance_stats?: Record<string, any>;
 }
 
 interface Props {
@@ -47,6 +49,19 @@ export function MarketplaceTab({ characterId, gold, onChange }: Props) {
     }
   }
 
+  async function handleCancel(listingId: string) {
+    setMessage(null);
+    setSuccess(null);
+    try {
+      await api.post("/marketplace/cancel", { characterId, listingId });
+      setSuccess("Đã hủy ký gửi. Vật phẩm đã trở về túi đồ.");
+      load();
+      onChange();
+    } catch (err: any) {
+      setMessage(err.response?.data?.error ?? "Không thể hủy ký gửi");
+    }
+  }
+
   return (
     <div>
       <h1 className="page-title">Chợ giao dịch</h1>
@@ -64,24 +79,27 @@ export function MarketplaceTab({ characterId, gold, onChange }: Props) {
         <p style={{ color: "var(--text-muted)" }}>Chưa có ai đăng bán vật phẩm nào.</p>
       ) : (
         <div className="item-grid">
-          {listings.map((listing) => (
-            <ItemCard
-              key={listing.id}
-              item={listing}
-              footer={
-                <div style={{ display: "flex", flexDirection: "column", gap: 6, width: "100%" }}>
-                  <span className="tag">Người bán: {listing.seller_name}</span>
-                  <button
-                    className="small-btn"
-                    onClick={() => handleBuy(listing.id)}
-                    disabled={gold < listing.price}
-                  >
-                    Mua — {listing.price.toLocaleString("vi-VN")} vàng
-                  </button>
-                </div>
-              }
-            />
-          ))}
+          {listings.map((listing) => {
+            const isOwnListing = listing.seller_character_id === characterId;
+            return (
+              <ItemCard
+                key={listing.id}
+                item={listing}
+                footer={
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6, width: "100%" }}>
+                    <span className="tag">Người bán: {listing.seller_name}</span>
+                    <button
+                      className={isOwnListing ? "small-btn small-btn--danger" : "small-btn"}
+                      onClick={() => (isOwnListing ? handleCancel(listing.id) : handleBuy(listing.id))}
+                      disabled={!isOwnListing && gold < listing.price}
+                    >
+                      {isOwnListing ? "Hủy ký gửi" : `Mua — ${listing.price.toLocaleString("vi-VN")} vàng`}
+                    </button>
+                  </div>
+                }
+              />
+            );
+          })}
         </div>
       )}
     </div>

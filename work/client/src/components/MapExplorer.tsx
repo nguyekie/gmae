@@ -6,9 +6,9 @@ import { CombatOverlay } from "./CombatOverlay";
 import { QuestDialog } from "./QuestDialog";
 import {
   TILE_SIZE,
-  MAP_COLS,
-  MAP_ROWS,
   ZONES,
+  getZoneCols,
+  getZoneRows,
   isBlocked,
   findPortal,
   type NpcDef,
@@ -62,6 +62,8 @@ const TILE_CLASS: Record<string, string> = {
 
 export function MapExplorer({ zoneId, spawnPoint, characterId, characterName, characterClass, onChange, onPortal }: Props) {
   const zone = ZONES[zoneId];
+  const zoneCols = getZoneCols(zone);
+  const zoneRows = getZoneRows(zone);
   const [pos, setPos] = useState(spawnPoint);
   const [dir, setDir] = useState<Dir>("down");
   const [otherPlayers, setOtherPlayers] = useState<Record<string, RemotePlayer>>({});
@@ -307,7 +309,7 @@ export function MapExplorer({ zoneId, spawnPoint, characterId, characterName, ch
 
   return (
     <div>
-      <div className="map-viewport" style={{ width: MAP_COLS * TILE_SIZE, height: MAP_ROWS * TILE_SIZE }} tabIndex={0}>
+      <div className="map-viewport" style={{ width: zoneCols * TILE_SIZE, height: zoneRows * TILE_SIZE }} tabIndex={0}>
         {zone.grid.map((row, y) =>
           row.split("").map((ch, x) => (
             <div

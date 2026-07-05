@@ -210,3 +210,28 @@ CREATE TABLE IF NOT EXISTS shop_items (
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_shop_items_unique ON shop_items(shop_id, item_type_id);
+
+-- ===================== Crafting / Companions =====================
+CREATE TABLE IF NOT EXISTS companion_types (
+  id VARCHAR(64) PRIMARY KEY,
+  name VARCHAR(64) NOT NULL,
+  role VARCHAR(32) NOT NULL,
+  description TEXT,
+  bonuses JSONB NOT NULL DEFAULT '{}',
+  recruit_cost_gold INT NOT NULL DEFAULT 0,
+  required_items JSONB NOT NULL DEFAULT '[]'
+);
+
+CREATE TABLE IF NOT EXISTS character_companions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  character_id UUID NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
+  companion_type_id VARCHAR(64) NOT NULL REFERENCES companion_types(id),
+  level INT NOT NULL DEFAULT 1,
+  active BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (character_id, companion_type_id)
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_character_companions_one_active
+  ON character_companions(character_id)
+  WHERE active;

@@ -75,6 +75,9 @@ export type MonsterSpriteKey =
   | "titan"
   | "rogue_construct"
   | "ash_marauder"
+  | "ashbound_sentinel"
+  | "shard_smith_echo"
+  | "oathbreaker_knight"
   | "fallen_paladin";
 
 export const MONSTER_SPRITES: Record<MonsterSpriteKey, { matrix: SpriteMatrix; palette: Record<string, string> }> = {
@@ -222,6 +225,45 @@ export const MONSTER_SPRITES: Record<MonsterSpriteKey, { matrix: SpriteMatrix; p
       ".O....O.",
     ],
     palette: { H: "#4a4038", A: "#7c6f63", E: "#e4572e", O: "#8f4a1e" },
+  },
+  ashbound_sentinel: {
+    matrix: [
+      ".SSSSSS.",
+      "SSAAAAAS",
+      "SAEEEEAS",
+      "SSAAAAAS",
+      ".SSSSSS.",
+      "S.S..S.S",
+      "S.S..S.S",
+      "..S..S..",
+    ],
+    palette: { S: "#4f5550", A: "#8f6b3d", E: "#f4c94d" },
+  },
+  shard_smith_echo: {
+    matrix: [
+      "..FFFF..",
+      ".FCCCCF.",
+      "FCCECCEF",
+      "FCCCCCCF",
+      "..MMMM..",
+      ".MMFFMM.",
+      ".M....M.",
+      "M......M",
+    ],
+    palette: { F: "#d08a2e", C: "#5b3fa0", E: "#f4d35e", M: "#3a2f2f" },
+  },
+  oathbreaker_knight: {
+    matrix: [
+      ".KKKKKK.",
+      "KKAAAAKK",
+      "KKRKKRKK",
+      "KKAAAAKK",
+      ".KKKKKK.",
+      "K.K..K.K",
+      "K.K..K.K",
+      "K..KK..K",
+    ],
+    palette: { K: "#252830", A: "#b08b4f", R: "#e4572e" },
   },
   fallen_paladin: {
     matrix: [

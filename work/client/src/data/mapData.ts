@@ -7,8 +7,6 @@ import type { NpcSpriteKey, MonsterSpriteKey } from "./sprites";
 // luôn được server tính toán và xác thực lại (xem server/src/routes/combat.ts và quest.ts).
 
 export const TILE_SIZE = 40;
-export const MAP_COLS = 16;
-export const MAP_ROWS = 10;
 
 // Ký hiệu: '.' cỏ/nền (đi được) | '#' vật cản (chặn) | '~' nước (chặn) | ',' đường mòn (đi được)
 // | '>' cổng dịch chuyển (đi được, chạm vào sẽ chuyển vùng)
@@ -107,29 +105,45 @@ const VOID_ABYSS_GRID = [
 ];
 
 const RIFT_GRID = [
-  "################",
-  "#..............#",
-  "#..####..####..#",
-  "#..#..#..#..#..#",
-  ">....#....#....#",
-  "#....#....#....#",
-  "#..#..#..#..#..#",
-  "#..####..####..#",
-  "#..............>",
-  "################",
+  "##################",
+  "#................#",
+  "#..####....####..#",
+  "#..#..#....#..#..#",
+  ">....#......#....#",
+  "#....#......#....#",
+  "#..#..#....#..#..#",
+  "#..####....####..#",
+  "#................>",
+  "##################",
 ];
 
 const ASHFALL_GRID = [
-  "################",
-  "#..............#",
-  "#..##......##..#",
-  ">..............#",
-  "#..............#",
-  "#....######....#",
-  "#....#....#....#",
-  "#..............#",
-  "#..............#",
-  "################",
+  "####################",
+  "#..................#",
+  "#..##..........##..#",
+  ">..................#",
+  "#..................#",
+  "#.....########.....#",
+  "#.....#......#.....#",
+  "#..................#",
+  "#..................>",
+  "#..................#",
+  "####################",
+];
+
+const OATHFORGE_GRID = [
+  "########################",
+  "#......................#",
+  "#..#####........#####..#",
+  "#..#................#..#",
+  "#..#.....######.....#..#",
+  ">.......##....##.......#",
+  "#.......##....##.......#",
+  "#..#.....######.....#..#",
+  "#..#................#..#",
+  "#..#####........#####..#",
+  "#......................#",
+  "########################",
 ];
 
 export const ZONES: Record<string, ZoneDef> = {
@@ -222,7 +236,7 @@ export const ZONES: Record<string, ZoneDef> = {
     ],
     portals: [
       { x: 0, y: 4, toZone: "void_abyss", spawnX: 14, spawnY: 4, label: "← Vực Thẳm Hư Không" },
-      { x: 15, y: 8, toZone: "ashfall_plains", spawnX: 1, spawnY: 3, label: "Đồng Bằng Tro Tàn →" },
+      { x: 17, y: 8, toZone: "ashfall_plains", spawnX: 1, spawnY: 3, label: "Đồng Bằng Tro Tàn →" },
     ],
     defaultSpawn: { x: 8, y: 1 },
   },
@@ -233,33 +247,65 @@ export const ZONES: Record<string, ZoneDef> = {
     grid: ASHFALL_GRID,
     npcs: [
       { id: "npc_vera", name: "Chỉ Huy Vera", sprite: "commander", x: 3, y: 1 },
-      { id: "npc_kael", name: "Hiệp Sĩ Kael", sprite: "knight", x: 12, y: 1 },
+      { id: "npc_kael", name: "Hiệp Sĩ Kael", sprite: "knight", x: 16, y: 1 },
     ],
     spawns: [
       { spawnId: "rogue_1", monsterId: "rogue_construct", name: "Cấu Trúc Nổi Loạn", sprite: "rogue_construct", x: 3, y: 7, respawnMs: 35000 },
-      { spawnId: "rogue_2", monsterId: "rogue_construct", name: "Cấu Trúc Nổi Loạn", sprite: "rogue_construct", x: 12, y: 7, respawnMs: 35000 },
-      { spawnId: "marauder_1", monsterId: "ash_marauder", name: "Cướp Tro Tàn", sprite: "ash_marauder", x: 6, y: 4, respawnMs: 32000 },
-      { spawnId: "marauder_2", monsterId: "ash_marauder", name: "Cướp Tro Tàn", sprite: "ash_marauder", x: 9, y: 4, respawnMs: 32000 },
+      { spawnId: "rogue_2", monsterId: "rogue_construct", name: "Cấu Trúc Nổi Loạn", sprite: "rogue_construct", x: 15, y: 7, respawnMs: 35000 },
+      { spawnId: "marauder_1", monsterId: "ash_marauder", name: "Cướp Tro Tàn", sprite: "ash_marauder", x: 7, y: 4, respawnMs: 32000 },
+      { spawnId: "marauder_2", monsterId: "ash_marauder", name: "Cướp Tro Tàn", sprite: "ash_marauder", x: 12, y: 4, respawnMs: 32000 },
       {
         spawnId: "paladin_1",
         monsterId: "fallen_paladin",
         name: "Thánh Kỵ Sĩ Sa Ngã",
         sprite: "fallen_paladin",
-        x: 7,
+        x: 9,
         y: 8,
         respawnMs: 1200000,
         isBoss: true,
       },
     ],
-    portals: [{ x: 0, y: 3, toZone: "rift_fields", spawnX: 14, spawnY: 8, label: "← Cánh Đồng Rạn Nứt" }],
+    portals: [
+      { x: 0, y: 3, toZone: "rift_fields", spawnX: 14, spawnY: 8, label: "← Cánh Đồng Rạn Nứt" },
+      { x: 19, y: 8, toZone: "oathforge_depths", spawnX: 1, spawnY: 5, label: "Lò Rèn Lời Thề →" },
+    ],
     defaultSpawn: { x: 1, y: 3 },
+  },
+
+  oathforge_depths: {
+    id: "oathforge_depths",
+    name: "Lò Rèn Lời Thề",
+    grid: OATHFORGE_GRID,
+    npcs: [
+      { id: "npc_vera", name: "Chỉ Huy Vera", sprite: "commander", x: 3, y: 1 },
+      { id: "npc_kael", name: "Hiệp Sĩ Kael", sprite: "knight", x: 20, y: 1 },
+      { id: "npc_rift_scribe", name: "Học Giả Rạn", sprite: "scholar", x: 11, y: 5 },
+    ],
+    spawns: [
+      { spawnId: "sentinel_1", monsterId: "ashbound_sentinel", name: "Vệ Binh Tro Buộc", sprite: "ashbound_sentinel", x: 5, y: 8, respawnMs: 36000 },
+      { spawnId: "sentinel_2", monsterId: "ashbound_sentinel", name: "Vệ Binh Tro Buộc", sprite: "ashbound_sentinel", x: 18, y: 8, respawnMs: 36000 },
+      { spawnId: "smith_echo_1", monsterId: "shard_smith_echo", name: "Dư Âm Thợ Rèn", sprite: "shard_smith_echo", x: 7, y: 3, respawnMs: 40000 },
+      { spawnId: "smith_echo_2", monsterId: "shard_smith_echo", name: "Dư Âm Thợ Rèn", sprite: "shard_smith_echo", x: 16, y: 3, respawnMs: 40000 },
+      { spawnId: "oathbreaker_1", monsterId: "oathbreaker_knight", name: "Kỵ Sĩ Bội Ước", sprite: "oathbreaker_knight", x: 10, y: 9, respawnMs: 52000 },
+      { spawnId: "oathbreaker_2", monsterId: "oathbreaker_knight", name: "Kỵ Sĩ Bội Ước", sprite: "oathbreaker_knight", x: 13, y: 9, respawnMs: 52000 },
+    ],
+    portals: [{ x: 0, y: 5, toZone: "ashfall_plains", spawnX: 18, spawnY: 8, label: "← Đồng Bằng Tro Tàn" }],
+    defaultSpawn: { x: 1, y: 5 },
   },
 };
 
+export function getZoneCols(zone: ZoneDef): number {
+  return Math.max(...zone.grid.map((row) => row.length));
+}
+
+export function getZoneRows(zone: ZoneDef): number {
+  return zone.grid.length;
+}
+
 export function isBlocked(zone: ZoneDef, x: number, y: number): boolean {
-  if (y < 0 || y >= zone.grid.length || x < 0 || x >= zone.grid[0].length) return true;
+  if (y < 0 || y >= zone.grid.length || x < 0 || x >= zone.grid[y].length) return true;
   const tile = zone.grid[y][x];
-  return tile === "#" || tile === "~";
+  return !tile || tile === "#" || tile === "~";
 }
 
 export function findPortal(zone: ZoneDef, x: number, y: number): PortalDef | undefined {

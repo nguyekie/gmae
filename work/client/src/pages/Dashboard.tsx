@@ -11,6 +11,8 @@ import { StoryTab } from "./tabs/StoryTab";
 import { FriendsTab } from "./tabs/FriendsTab";
 import { ChatTab } from "./tabs/ChatTab";
 import { ShopTab } from "./tabs/ShopTab";
+import { CraftingTab } from "./tabs/CraftingTab";
+import { CompanionsTab } from "./tabs/CompanionsTab";
 import { ShardBar } from "../components/ShardBar";
 import { PixelSprite } from "../components/PixelSprite";
 import { PvpBattleOverlay, type PvpResultData } from "../components/PvpBattleOverlay";
@@ -191,6 +193,12 @@ export function Dashboard() {
           <NavLink to={`/play/${characterId}/shop`} className={({ isActive }) => `nav-item ${isActive ? "nav-item--active" : ""}`}>
             🏬 Cửa hàng
           </NavLink>
+          <NavLink to={`/play/${characterId}/crafting`} className={({ isActive }) => `nav-item ${isActive ? "nav-item--active" : ""}`}>
+            ⚒ Rèn đồ
+          </NavLink>
+          <NavLink to={`/play/${characterId}/companions`} className={({ isActive }) => `nav-item ${isActive ? "nav-item--active" : ""}`}>
+            🛡 Trợ thủ
+          </NavLink>
           <NavLink to={`/play/${characterId}/story`} className={({ isActive }) => `nav-item ${isActive ? "nav-item--active" : ""}`}>
             📜 Cốt truyện
           </NavLink>
@@ -225,6 +233,8 @@ export function Dashboard() {
           <Route path="friends" element={<FriendsTab characterId={characterId!} />} />
           <Route path="chat" element={<ChatTab characterId={characterId} />} />
           <Route path="shop" element={<ShopTab characterId={characterId!} gold={character.gold} onChange={refresh} />} />
+          <Route path="crafting" element={<CraftingTab characterId={characterId!} onChange={refresh} />} />
+          <Route path="companions" element={<CompanionsTab characterId={characterId!} onChange={refresh} />} />
           <Route path="story" element={<StoryTab characterLevel={character.level} />} />
         </Routes>
       </main>

@@ -108,16 +108,49 @@ export async function computeEquipmentBonus(characterId: string) {
   let atk = 0;
   let def = 0;
   let spd = 0;
+  let hp = 0;
+  let mp = 0;
   for (const row of equipped.rows) {
     atk += row.base_stats?.atk ?? 0;
     def += row.base_stats?.def ?? 0;
     spd += row.base_stats?.spd ?? 0;
-    const special = row.instance_stats?.special;
-    if (special?.stat === "atk") atk += special.bonus ?? 0;
-    if (special?.stat === "def") def += special.bonus ?? 0;
-    if (special?.stat === "spd") spd += special.bonus ?? 0;
+    hp += row.base_stats?.hp ?? 0;
+    mp += row.base_stats?.mp ?? 0;
+    const bonuses = Array.isArray(row.instance_stats?.bonuses)
+      ? row.instance_stats.bonuses
+      : row.instance_stats?.special
+      ? [row.instance_stats.special]
+      : [];
+    for (const bonus of bonuses) {
+      if (bonus?.stat === "atk") atk += bonus.bonus ?? 0;
+      if (bonus?.stat === "def") def += bonus.bonus ?? 0;
+      if (bonus?.stat === "spd") spd += bonus.bonus ?? 0;
+      if (bonus?.stat === "hp") hp += bonus.bonus ?? 0;
+      if (bonus?.stat === "mp") mp += bonus.bonus ?? 0;
+    }
   }
-  return { atk, def, spd };
+  return { atk, def, spd, hp, mp };
+}
+
+export async function computeCompanionBonus(characterId: string) {
+  const result = await pool.query(
+    `SELECT ct.bonuses, cc.level
+     FROM character_companions cc
+     JOIN companion_types ct ON ct.id = cc.companion_type_id
+     WHERE cc.character_id = $1 AND cc.active = true
+     LIMIT 1`,
+    [characterId]
+  );
+  const companion = result.rows[0];
+  const bonuses = companion?.bonuses ?? {};
+  const level = companion?.level ?? 1;
+  return {
+    atk: (bonuses.atk ?? 0) * level,
+    def: (bonuses.def ?? 0) * level,
+    spd: (bonuses.spd ?? 0) * level,
+    hp: (bonuses.hp ?? 0) * level,
+    mp: (bonuses.mp ?? 0) * level,
+  };
 }
 
 export async function assertOwnCharacter(userId: string, characterId: string) {
@@ -142,7 +175,15 @@ characterRouter.get("/:id", async (req: AuthedRequest, res) => {
     [character.id]
   );
 
-  const bonus = await computeEquipmentBonus(character.id);
+  const gearBonus = await computeEquipmentBonus(character.id);
+  const companionBonus = await computeCompanionBonus(character.id);
+  const bonus = {
+    atk: gearBonus.atk + companionBonus.atk,
+    def: gearBonus.def + companionBonus.def,
+    spd: gearBonus.spd + companionBonus.spd,
+    hp: gearBonus.hp + companionBonus.hp,
+    mp: gearBonus.mp + companionBonus.mp,
+  };
 
   res.json({
     character,
@@ -151,6 +192,8 @@ characterRouter.get("/:id", async (req: AuthedRequest, res) => {
       atk: character.base_atk + bonus.atk,
       def: character.base_def + bonus.def,
       spd: character.base_spd + bonus.spd,
+      maxHp: character.max_hp + bonus.hp,
+      maxMp: character.max_mp + bonus.mp,
     },
   });
 });

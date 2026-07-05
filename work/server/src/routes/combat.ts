@@ -3,7 +3,7 @@ import { z } from "zod";
 import type { Server as SocketServer } from "socket.io";
 import { pool } from "../db.js";
 import { requireAuth, type AuthedRequest } from "../middleware/auth.js";
-import { assertOwnCharacter, computeEquipmentBonus } from "./character.js";
+import { assertOwnCharacter, computeCompanionBonus, computeEquipmentBonus } from "./character.js";
 import { applyKillProgress } from "./quest.js";
 import { buildWeaponInstanceStats } from "../utils/itemRarity.js";
 
@@ -146,16 +146,23 @@ export function buildCombatRouter(io: SocketServer) {
 
     // Lấy chỉ số tổng hợp (base + trang bị, gồm cả thuộc tính đặc biệt của đồ hiếm) — tính lại ở
     // server, không tin client.
-    const bonus = await computeEquipmentBonus(characterId);
+    const gearBonus = await computeEquipmentBonus(characterId);
+    const companionBonus = await computeCompanionBonus(characterId);
+    const bonus = {
+      atk: gearBonus.atk + companionBonus.atk,
+      def: gearBonus.def + companionBonus.def,
+      hp: gearBonus.hp + companionBonus.hp,
+    };
     const atk = character.base_atk + bonus.atk;
     const def = character.base_def + bonus.def;
+    const gearHp = bonus.hp ?? 0;
 
     if (monster.is_boss) {
-      return handleBossFight(req, res, io, character, monster, atk, def);
+      return handleBossFight(req, res, io, character, monster, atk, def, gearHp);
     }
 
     // ===== Quái thường: máu luôn đầy mỗi lần đánh (không cần máu bền) =====
-    let playerHp = character.hp;
+    let playerHp = character.hp + gearHp;
     let monsterHp = monster.hp;
     const log: string[] = [];
     let turn = 0;
@@ -177,7 +184,7 @@ export function buildCombatRouter(io: SocketServer) {
       await client.query("BEGIN");
 
       if (!victory) {
-        const survivingHp = Math.max(1, playerHp); // không cho chết hẳn ở bản demo
+        const survivingHp = Math.max(1, Math.min(character.max_hp, playerHp - gearHp)); // gear HP acts as a temporary combat buffer
         await client.query("UPDATE characters SET hp = $1 WHERE id = $2", [survivingHp, characterId]);
         await client.query("COMMIT");
         return res.json({ victory: false, log, remainingHp: survivingHp });
@@ -188,7 +195,7 @@ export function buildCombatRouter(io: SocketServer) {
 
       await client.query(
         `UPDATE characters SET hp = $1, exp = $2, level = $3, max_hp = $4, max_mp = $5, gold = gold + $6 WHERE id = $7`,
-        [Math.max(1, playerHp), newExp, newLevel, newMaxHp, newMaxMp, goldReward, characterId]
+        [Math.max(1, Math.min(newMaxHp, playerHp - gearHp)), newExp, newLevel, newMaxHp, newMaxMp, goldReward, characterId]
       );
 
       await applyKillProgress(client, characterId, monsterId);
@@ -217,7 +224,8 @@ export function buildCombatRouter(io: SocketServer) {
     character: any,
     monster: any,
     atk: number,
-    def: number
+    def: number,
+    gearHp: number
   ) {
     const characterId = character.id;
     const client = await pool.connect();
@@ -255,7 +263,7 @@ export function buildCombatRouter(io: SocketServer) {
       // (No daily attempt tracking — unlimited hits allowed for world/event bosses)
 
       // ===== Mô phỏng giao tranh: sát thương lên boss được TRỪ VÀO MÁU CHUNG, bền vững qua từng lượt đánh =====
-      let playerHp = character.hp;
+      let playerHp = character.hp + gearHp;
       let bossHp = state.current_hp;
       // Check if attacker owns the apex weapon — used for skill/bonus
       let apexOwned = false;
@@ -273,9 +281,9 @@ export function buildCombatRouter(io: SocketServer) {
       let turn = 0;
       while (playerHp > 0 && bossHp > 0 && turn < 30) {
         let dmgToBoss = Math.max(1, atk - monster.def + Math.floor(Math.random() * 5));
-        // Apex skill 'void_cleave' — passive on-hit: add 20% extra damage for this strike
+        // SSS+ apex skill 'void_cleave' — passive on-hit: add 75% extra damage for this strike
         if (apexOwned) {
-          const extra = Math.max(1, Math.floor(dmgToBoss * 0.2));
+          const extra = Math.max(1, Math.floor(dmgToBoss * 0.75));
           dmgToBoss += extra;
           log.push(`Bạn sử dụng năng lực Xén Hư Không, gây thêm ${extra} sát thương`);
         }
@@ -291,7 +299,7 @@ export function buildCombatRouter(io: SocketServer) {
 
       const damageDealt = Math.max(0, bossHpAtStart - Math.max(0, bossHp));
       const bossDefeated = bossHp <= 0;
-      const survivingHp = Math.max(1, playerHp);
+      const survivingHp = Math.max(1, Math.min(character.max_hp, playerHp - gearHp));
 
       await client.query("UPDATE characters SET hp = $1 WHERE id = $2", [survivingHp, characterId]);
 
@@ -389,10 +397,10 @@ export function buildCombatRouter(io: SocketServer) {
         finalExp += monster.exp_reward;
         finalGold += monster.gold_min + Math.floor(Math.random() * (monster.gold_max - monster.gold_min + 1));
         droppedItems = await rollDrops(client, characterId, monster);
-        // Guaranteed legendary reward for the killer (boss-kill trophy)
+        // Guaranteed legendary reward for the killer (boss-kill trophy).
+        // SSS+ stays ultra-rare in the boss drop table, not guaranteed.
         try {
-          // Killer receives guaranteed apex SSS+ weapon as trophy
-          const guaranteedId = "apex_oblivion";
+          const guaranteedId = monster.id === "fallen_paladin" ? "titan_sunderer" : "abyssal_fang_blade";
           const itRes = await client.query("SELECT rarity, slot, stackable FROM item_types WHERE id = $1", [guaranteedId]);
           const it = itRes.rows[0];
           if (it && it.stackable) {

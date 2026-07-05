@@ -16,6 +16,7 @@ export function buildMarketplaceRouter(io: SocketServer) {
     const result = await pool.query(
       `SELECT ml.id, ml.price, ml.created_at, ii.id as item_instance_id, ii.instance_stats,
               it.name, it.rarity, it.slot, it.base_stats,
+              c.id as seller_character_id,
               c.name as seller_name
        FROM marketplace_listings ml
        JOIN item_instances ii ON ii.id = ml.item_instance_id

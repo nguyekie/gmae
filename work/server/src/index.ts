@@ -11,6 +11,8 @@ import { questRouter } from "./routes/quest.js";
 import { friendsRouter } from "./routes/friends.js";
 import { chatRouter } from "./routes/chat.js";
 import { shopRouter } from "./routes/shop.js";
+import { craftingRouter } from "./routes/crafting.js";
+import { companionsRouter } from "./routes/companions.js";
 import { setupSockets } from "./sockets/index.js";
 
 dotenv.config();
@@ -48,6 +50,8 @@ app.use("/api/quests", questRouter);
 app.use("/api/friends", friendsRouter);
 app.use("/api/chat", chatRouter);
 app.use("/api/shops", shopRouter);
+app.use("/api/crafting", craftingRouter);
+app.use("/api/companions", companionsRouter);
 
 // Middleware bắt lỗi chung — luôn đặt cuối cùng
 app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {

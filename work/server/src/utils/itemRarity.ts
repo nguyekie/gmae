@@ -22,17 +22,31 @@ export function getRaritySortRank(rarity?: string | null) {
 export function buildWeaponInstanceStats(rarity?: string | null, note?: string) {
   if (!isSpecialWeaponRarity(rarity)) return null;
 
-  const possibleStats = ["atk", "def", "spd"];
-  const stat = possibleStats[Math.floor(Math.random() * possibleStats.length)];
-  let bonus = 0;
+  const possibleStats = rarity === "sss_plus" ? ["atk", "def", "spd", "hp", "mp"] : ["atk", "def", "spd"];
+  const statCount =
+    rarity === "sss_plus" ? 3 :
+    rarity === "legendary" ? 2 + Math.floor(Math.random() * 2) :
+    rarity === "epic" ? 2 :
+    1;
 
-  if (rarity === "rare") bonus = 3 + Math.floor(Math.random() * 4);
-  else if (rarity === "epic") bonus = 6 + Math.floor(Math.random() * 7);
-  else if (rarity === "legendary") bonus = 12 + Math.floor(Math.random() * 9);
-  else if (rarity === "sss_plus") bonus = 20 + Math.floor(Math.random() * 16);
+  const rollBonus = (stat: string) => {
+    if (rarity === "rare") return 4 + Math.floor(Math.random() * 5);
+    if (rarity === "epic") return 8 + Math.floor(Math.random() * 8);
+    if (rarity === "legendary") return 15 + Math.floor(Math.random() * 11);
+    if (rarity === "sss_plus") {
+      if (stat === "hp") return 260 + Math.floor(Math.random() * 181);
+      if (stat === "mp") return 120 + Math.floor(Math.random() * 101);
+      return 55 + Math.floor(Math.random() * 31);
+    }
+    return 0;
+  };
+
+  const shuffledStats = [...possibleStats].sort(() => Math.random() - 0.5);
+  const bonuses = shuffledStats.slice(0, statCount).map((stat) => ({ stat, bonus: rollBonus(stat) }));
 
   return {
-    special: { stat, bonus },
+    bonuses,
+    special: bonuses[0],
     ...(note ? { note } : {}),
   };
 }
