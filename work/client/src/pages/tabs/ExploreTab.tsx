@@ -2,7 +2,7 @@ import { useState } from "react";
 import { MapExplorer } from "../../components/MapExplorer";
 import { ZONES } from "../../data/mapData";
 
-const ZONE_ORDER = ["starting_village", "whispering_forest", "shattered_tomb", "void_abyss", "rift_fields"];
+const ZONE_ORDER = ["starting_village", "whispering_forest", "shattered_tomb", "void_abyss", "rift_fields", "ashfall_plains"];
 
 interface Props {
   characterId: string;

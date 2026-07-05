@@ -7,7 +7,7 @@ interface Listing {
   price: number;
   seller_name: string;
   name: string;
-  rarity: "common" | "rare" | "epic" | "legendary";
+  rarity: "common" | "rare" | "epic" | "legendary" | "sss_plus";
   slot: string;
   base_stats: Record<string, number>;
 }

@@ -305,6 +305,7 @@
 .item-card--rare { border-color: var(--rarity-rare); box-shadow: 0 0 12px rgba(74,144,217,0.15); }
 .item-card--epic { border-color: var(--rarity-epic); box-shadow: 0 0 12px rgba(168,85,247,0.18); }
 .item-card--legendary { border-color: var(--rarity-legendary); box-shadow: 0 0 16px rgba(224,169,62,0.25); }
+.item-card--sss_plus { border-color: var(--rarity-sss-plus); box-shadow: 0 0 20px rgba(255,95,125,0.28); }
 
 .item-card__header {
   display: flex;
@@ -322,6 +323,7 @@
 .item-card__rarity--rare { color: var(--rarity-rare); }
 .item-card__rarity--epic { color: var(--rarity-epic); }
 .item-card__rarity--legendary { color: var(--rarity-legendary); }
+.item-card__rarity--sss_plus { color: var(--rarity-sss-plus); text-shadow: 0 0 8px rgba(255,95,125,0.35); }
 
 .item-card__slot {
   font-size: 10px;

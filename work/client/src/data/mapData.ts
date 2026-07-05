@@ -1,3 +1,5 @@
+import type { NpcSpriteKey, MonsterSpriteKey } from "./sprites";
+
 // Dữ liệu bản đồ tĩnh cho "Khám phá" dạng đi lại được (client-side), hỗ trợ nhiều vùng
 // nối với nhau qua cổng dịch chuyển (portal).
 // Ghi chú: tương tự các game demo 2D nhẹ, việc di chuyển/va chạm được xử lý ở client để mượt và đơn giản.
@@ -14,7 +16,7 @@ export const MAP_ROWS = 10;
 export interface NpcDef {
   id: string;
   name: string;
-  sprite: "elder" | "hunter" | "scholar" | "tablet" | "wanderer";
+  sprite: NpcSpriteKey;
   x: number;
   y: number;
 }
@@ -23,16 +25,7 @@ export interface MonsterSpawnDef {
   spawnId: string;
   monsterId: string;
   name: string;
-  sprite:
-    | "slime"
-    | "wolf"
-    | "guardian"
-    | "wraith"
-    | "stalker"
-    | "abyssal_hunter"
-    | "rift_construct"
-    | "wisp"
-    | "titan";
+  sprite: MonsterSpriteKey;
   x: number;
   y: number;
   respawnMs: number;
@@ -115,13 +108,26 @@ const VOID_ABYSS_GRID = [
 
 const RIFT_GRID = [
   "################",
-  "#.............#",
+  "#..............#",
   "#..####..####..#",
   "#..#..#..#..#..#",
   ">....#....#....#",
   "#....#....#....#",
   "#..#..#..#..#..#",
   "#..####..####..#",
+  "#..............>",
+  "################",
+];
+
+const ASHFALL_GRID = [
+  "################",
+  "#..............#",
+  "#..##......##..#",
+  ">..............#",
+  "#..............#",
+  "#....######....#",
+  "#....#....#....#",
+  "#..............#",
   "#..............#",
   "################",
 ];
@@ -214,8 +220,39 @@ export const ZONES: Record<string, ZoneDef> = {
       { spawnId: "hunter_2", monsterId: "abyssal_hunter", name: "Thợ Săn Vực Thẳm", sprite: "abyssal_hunter", x: 10, y: 3, respawnMs: 30000 },
       { spawnId: "construct_1", monsterId: "rift_construct", name: "Cỗ Máy Rạn Nứt", sprite: "rift_construct", x: 7, y: 5, respawnMs: 600000 },
     ],
-    portals: [{ x: 0, y: 4, toZone: "void_abyss", spawnX: 14, spawnY: 4, label: "← Vực Thẳm Hư Không" }],
+    portals: [
+      { x: 0, y: 4, toZone: "void_abyss", spawnX: 14, spawnY: 4, label: "← Vực Thẳm Hư Không" },
+      { x: 15, y: 8, toZone: "ashfall_plains", spawnX: 1, spawnY: 3, label: "Đồng Bằng Tro Tàn →" },
+    ],
     defaultSpawn: { x: 8, y: 1 },
+  },
+
+  ashfall_plains: {
+    id: "ashfall_plains",
+    name: "Đồng Bằng Tro Tàn",
+    grid: ASHFALL_GRID,
+    npcs: [
+      { id: "npc_vera", name: "Chỉ Huy Vera", sprite: "commander", x: 3, y: 1 },
+      { id: "npc_kael", name: "Hiệp Sĩ Kael", sprite: "knight", x: 12, y: 1 },
+    ],
+    spawns: [
+      { spawnId: "rogue_1", monsterId: "rogue_construct", name: "Cấu Trúc Nổi Loạn", sprite: "rogue_construct", x: 3, y: 7, respawnMs: 35000 },
+      { spawnId: "rogue_2", monsterId: "rogue_construct", name: "Cấu Trúc Nổi Loạn", sprite: "rogue_construct", x: 12, y: 7, respawnMs: 35000 },
+      { spawnId: "marauder_1", monsterId: "ash_marauder", name: "Cướp Tro Tàn", sprite: "ash_marauder", x: 6, y: 4, respawnMs: 32000 },
+      { spawnId: "marauder_2", monsterId: "ash_marauder", name: "Cướp Tro Tàn", sprite: "ash_marauder", x: 9, y: 4, respawnMs: 32000 },
+      {
+        spawnId: "paladin_1",
+        monsterId: "fallen_paladin",
+        name: "Thánh Kỵ Sĩ Sa Ngã",
+        sprite: "fallen_paladin",
+        x: 7,
+        y: 8,
+        respawnMs: 1200000,
+        isBoss: true,
+      },
+    ],
+    portals: [{ x: 0, y: 3, toZone: "rift_fields", spawnX: 14, spawnY: 8, label: "← Cánh Đồng Rạn Nứt" }],
+    defaultSpawn: { x: 1, y: 3 },
   },
 };
 

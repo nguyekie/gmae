@@ -21,7 +21,9 @@ export const PLAYER_PALETTES: Record<string, Record<string, string>> = {
   archer: { H: "#4a3319", S: "#e3b389", E: "#1a1a1a", B: "#4f7942", L: "#35502c" },
 };
 
-export const NPC_SPRITES: Record<string, { matrix: SpriteMatrix; palette: Record<string, string> }> = {
+export type NpcSpriteKey = "elder" | "hunter" | "scholar" | "tablet" | "wanderer" | "commander" | "knight";
+
+export const NPC_SPRITES: Record<NpcSpriteKey, { matrix: SpriteMatrix; palette: Record<string, string> }> = {
   elder: {
     matrix: HUMANOID,
     palette: { H: "#cfcfcf", S: "#d8a878", E: "#1a1a1a", B: "#7a5c2e", L: "#4a3a1e" },
@@ -51,6 +53,14 @@ export const NPC_SPRITES: Record<string, { matrix: SpriteMatrix; palette: Record
     matrix: HUMANOID,
     palette: { H: "#1c1f2b", S: "#c9a877", E: "#c9a24b", B: "#2c2f3d", L: "#1a1c24" },
   },
+  commander: {
+    matrix: HUMANOID,
+    palette: { H: "#3a1414", S: "#e3b389", E: "#1a1a1a", B: "#8b2e2e", L: "#5c1f1f" },
+  },
+  knight: {
+    matrix: HUMANOID,
+    palette: { H: "#1a2338", S: "#e3b389", E: "#1a1a1a", B: "#4a6fa5", L: "#c9d3de" },
+  },
 };
 
 export type MonsterSpriteKey =
@@ -62,7 +72,10 @@ export type MonsterSpriteKey =
   | "abyssal_hunter"
   | "rift_construct"
   | "wisp"
-  | "titan";
+  | "titan"
+  | "rogue_construct"
+  | "ash_marauder"
+  | "fallen_paladin";
 
 export const MONSTER_SPRITES: Record<MonsterSpriteKey, { matrix: SpriteMatrix; palette: Record<string, string> }> = {
   slime: {
@@ -183,5 +196,44 @@ export const MONSTER_SPRITES: Record<MonsterSpriteKey, { matrix: SpriteMatrix; p
       "T..TT..T",
     ],
     palette: { T: "#3a2e2e", R: "#e0a93e", O: "#8b1e1e" },
+  },
+  rogue_construct: {
+    matrix: [
+      "M.MMMM.M",
+      "MMMMMMMM",
+      "MMOXXOMM",
+      "MOXXXXOM",
+      ".MMMMMM.",
+      "M.M..M.M",
+      "M.M..M.M",
+      "..M..M..",
+    ],
+    palette: { M: "#565f66", X: "#9aa3a8", O: "#e4572e" },
+  },
+  ash_marauder: {
+    matrix: [
+      "..HHHH..",
+      ".HAAAAH.",
+      ".AEEAEAA",
+      ".AAAAAA.",
+      "..OOOO..",
+      ".OOOOOO.",
+      ".OO..OO.",
+      ".O....O.",
+    ],
+    palette: { H: "#4a4038", A: "#7c6f63", E: "#e4572e", O: "#8f4a1e" },
+  },
+  fallen_paladin: {
+    matrix: [
+      ".KKKKKK.",
+      "KKGGGGKK",
+      "KKRRRRKK",
+      "KKKKKKKK",
+      "KGKKKKGK",
+      "KGKKKKGK",
+      "KK.KK.KK",
+      "K..KK..K",
+    ],
+    palette: { K: "#1c1a22", G: "#c9a24b", R: "#8b1e2e" },
   },
 };

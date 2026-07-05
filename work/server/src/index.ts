@@ -18,11 +18,24 @@ dotenv.config();
 const app = express();
 const httpServer = createServer(app);
 
-const clientOrigin = process.env.CLIENT_ORIGIN || "http://localhost:5173";
-app.use(cors({ origin: clientOrigin }));
+const localClientOrigins: string[] = ["http://localhost:5173", "http://127.0.0.1:5173"];
+const configuredClientOrigins = (process.env.CLIENT_ORIGIN || "")
+  .split(",")
+  .map((origin: string) => origin.trim())
+  .filter((origin: string) => Boolean(origin));
+const clientOrigins: string[] =
+  configuredClientOrigins.length > 0 ? configuredClientOrigins : localClientOrigins;
+
+if (clientOrigins.some((origin) => localClientOrigins.includes(origin))) {
+  for (const origin of localClientOrigins) {
+    if (!clientOrigins.includes(origin)) clientOrigins.push(origin);
+  }
+}
+
+app.use(cors({ origin: clientOrigins }));
 app.use(express.json());
 
-const io = setupSockets(httpServer, clientOrigin);
+const io = setupSockets(httpServer, clientOrigins);
 
 app.get("/health", (_req, res) => res.json({ status: "ok" }));
 

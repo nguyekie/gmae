@@ -42,7 +42,7 @@ const itemTypes = [
   { id: "drakehide_gloves", name: "Găng Da Rồng", rarity: "epic", slot: "gloves", base_stats: { atk: 9, def: 9, fire_dmg: 6 }, level_requirement: 11, description: "Găng tay được khâu từ da Rồng, bền và tăng sát thương lửa.", stackable: false },
   { id: "shard_of_silence", name: "Mảnh Vỡ Tĩnh Lặng", rarity: "legendary", slot: "trinket", base_stats: { atk: 10, def: 10, mp: 20 }, level_requirement: 15, description: "Phần thưởng cho kẻ dám đối mặt sự thật về Đại Vỡ Vụn." },
   // --- New SSS+ boss trophy weapon (apex) and additional high-end items ---
-  { id: "apex_oblivion", name: "Hủy Diệt Đỉnh Nguyên (SSS+)", rarity: "legendary", slot: "weapon", base_stats: { atk: 72, spd: 6, hp: 200 }, level_requirement: 20, description: "Vũ khí huyền thoại mang sức công phá của kẻ hủy diệt — có chỉ số đặc biệt và kỹ năng riêng.", stackable: false, special: { passive: { boss_drop_rate_bonus: 0.01 }, skill: { id: "void_cleave", name: "Xén Hư Không", description: "Đòn tấn công mạnh phá vỡ lá chắn kẻ thù, tăng sát thương lên quái boss trong 6s (thể hiện bằng hiệu ứng)." } } },
+  { id: "apex_oblivion", name: "Hủy Diệt Đỉnh Nguyên (SSS+)", rarity: "sss_plus", slot: "weapon", base_stats: { atk: 72, spd: 6, hp: 200 }, level_requirement: 20, description: "Vũ khí huyền thoại mang sức công phá của kẻ hủy diệt — có chỉ số đặc biệt và kỹ năng riêng.", stackable: false, special: { passive: { boss_drop_rate_bonus: 0.01 }, skill: { id: "void_cleave", name: "Xén Hư Không", description: "Đòn tấn công mạnh phá vỡ lá chắn kẻ thù, tăng sát thương lên quái boss trong 6s (thể hiện bằng hiệu ứng)." } } },
   { id: "rift_core", name: "Tinh Hoa Rạn Nứt", rarity: "epic", slot: "material", base_stats: {}, level_requirement: 14, stackable: true, description: "Mảnh lõi thu được từ các vật thể rạn nứt, dùng để rèn vũ khí." },
   { id: "abyssal_edge", name: "Bộ Lưỡi Vực Thẳm", rarity: "epic", slot: "weapon", base_stats: { atk: 36, spd: 3 }, level_requirement: 14, description: "Lưỡi kiếm được tinh luyện từ bụi Hư Không." },
 
@@ -172,6 +172,57 @@ const monsters = [
       { item_type_id: "apex_oblivion", chance: 0.03 },
       { item_type_id: "rift_core", chance: 0.6 },
       { item_type_id: "abyssal_edge", chance: 0.12 },
+    ],
+  },
+  {
+    id: "rogue_construct",
+    name: "Cấu Trúc Nổi Loạn",
+    zone: "ashfall_plains",
+    level: 20,
+    hp: 1150,
+    atk: 72,
+    def: 30,
+    exp_reward: 680,
+    gold_min: 180,
+    gold_max: 300,
+    drop_table: [
+      { item_type_id: "rift_core", chance: 0.55 },
+      { item_type_id: "abyssal_edge", chance: 0.12 },
+    ],
+  },
+  {
+    id: "ash_marauder",
+    name: "Cướp Tro Tàn",
+    zone: "ashfall_plains",
+    level: 20,
+    hp: 1050,
+    atk: 78,
+    def: 26,
+    exp_reward: 700,
+    gold_min: 190,
+    gold_max: 320,
+    drop_table: [
+      { item_type_id: "elixir_of_vigor", chance: 0.22 },
+      { item_type_id: "rift_core", chance: 0.45 },
+    ],
+  },
+  {
+    id: "fallen_paladin",
+    name: "Thánh Kỵ Sĩ Sa Ngã",
+    zone: "ashfall_plains",
+    level: 22,
+    hp: 26000,
+    atk: 230,
+    def: 32,
+    exp_reward: 1800,
+    gold_min: 600,
+    gold_max: 1100,
+    is_boss: true,
+    respawn_seconds: 1200,
+    drop_table: [
+      { item_type_id: "apex_oblivion", chance: 0.05 },
+      { item_type_id: "water_shard_fragment", chance: 0.18 },
+      { item_type_id: "rift_core", chance: 1 },
     ],
   },
   {
@@ -330,15 +381,75 @@ const quests = [
     reward_gold: 1400,
     reward_items: ["apex_oblivion"],
   },
+  {
+    id: "quest_ashfall_oath_vera",
+    title: "Chương 8 — Lời Thề Bảo Tồn",
+    zone: "ashfall_plains",
+    giver_npc_id: "npc_vera",
+    level_requirement: 19,
+    prerequisite_quest_id: "quest_construct_down" as string | null,
+    dialogue_offer: "Đồng Bằng Tro Tàn đang bị cướp bóc bởi những kẻ săn mảnh vỡ. Nếu ngươi đứng cùng Hội Bảo Tồn, hãy dập tắt bọn Cướp Tro Tàn trước.",
+    dialogue_progress: "Cướp Tro Tàn vẫn còn lảng vảng quanh đồng bằng. Đừng để chúng mang mảnh vỡ ra khỏi vùng phong ấn.",
+    dialogue_complete: "Ngươi đã giữ lời. Hội Bảo Tồn sẽ ghi nhớ người dám chọn kỷ luật thay vì tham vọng.",
+    objectives: [{ type: "kill", targetId: "ash_marauder", count: 4, label: "Cướp Tro Tàn" }],
+    reward_exp: 2600,
+    reward_gold: 1800,
+    reward_items: ["water_shard_fragment"],
+  },
+  {
+    id: "quest_ashfall_oath_kael",
+    title: "Chương 8 — Lời Thề Thức Tỉnh",
+    zone: "ashfall_plains",
+    giver_npc_id: "npc_kael",
+    level_requirement: 19,
+    prerequisite_quest_id: "quest_construct_down" as string | null,
+    dialogue_offer: "Những Cấu Trúc Nổi Loạn đang phá nát tuyến khảo sát. Nếu ngươi tin Etheria có thể tái thiết, hãy chứng minh bằng hành động.",
+    dialogue_progress: "Cấu Trúc Nổi Loạn chưa bị dẹp hết. Mỗi cỗ máy gục xuống là một bước để chúng ta hiểu lại sức mạnh mảnh vỡ.",
+    dialogue_complete: "Tốt. Liên Minh Thức Tỉnh cần những người không sợ dùng sức mạnh để xây lại thế giới.",
+    objectives: [{ type: "kill", targetId: "rogue_construct", count: 4, label: "Cấu Trúc Nổi Loạn" }],
+    reward_exp: 2600,
+    reward_gold: 1800,
+    reward_items: ["water_shard_fragment"],
+  },
+  {
+    id: "quest_fallen_paladin_vera",
+    title: "Chương 9 — Thánh Kỵ Sĩ Sa Ngã",
+    zone: "ashfall_plains",
+    giver_npc_id: "npc_vera",
+    level_requirement: 21,
+    prerequisite_quest_id: "quest_ashfall_oath_vera" as string | null,
+    dialogue_offer: "Một hiệp sĩ từng bảo vệ Etheria đã bị mảnh vỡ ăn mòn. Hạ hắn xuống là cách nhân từ cuối cùng.",
+    dialogue_progress: "Thánh Kỵ Sĩ Sa Ngã vẫn còn đứng giữa tro tàn. Hãy chuẩn bị kỹ, đó là một trận đánh dài.",
+    dialogue_complete: "Sự yên nghỉ cuối cùng đã đến với hắn. Cả đồng bằng vừa thở ra sau nhiều năm bị nguyền rủa.",
+    objectives: [{ type: "kill", targetId: "fallen_paladin", count: 1, label: "Thánh Kỵ Sĩ Sa Ngã" }],
+    reward_exp: 3600,
+    reward_gold: 2600,
+    reward_items: ["apex_oblivion"],
+  },
+  {
+    id: "quest_fallen_paladin_kael",
+    title: "Chương 9 — Thánh Kỵ Sĩ Sa Ngã",
+    zone: "ashfall_plains",
+    giver_npc_id: "npc_kael",
+    level_requirement: 21,
+    prerequisite_quest_id: "quest_ashfall_oath_kael" as string | null,
+    dialogue_offer: "Nếu muốn tái thiết Etheria, trước hết ta phải đối mặt với những người đã thất bại trước sức mạnh ấy. Hạ Thánh Kỵ Sĩ Sa Ngã.",
+    dialogue_progress: "Hắn vẫn đứng đó, như lời cảnh báo sống về cái giá của tham vọng. Đừng để lời cảnh báo đó thành xiềng xích.",
+    dialogue_complete: "Ngươi đã vượt qua nỗi sợ của thời đại cũ. Giờ chúng ta có thể viết tiếp chương mới.",
+    objectives: [{ type: "kill", targetId: "fallen_paladin", count: 1, label: "Thánh Kỵ Sĩ Sa Ngã" }],
+    reward_exp: 3600,
+    reward_gold: 2600,
+    reward_items: ["apex_oblivion"],
+  },
 ];
 
 async function seed() {
   console.log("Đang seed item_types...");
   for (const item of itemTypes) {
     await pool.query(
-      `INSERT INTO item_types (id, name, rarity, slot, base_stats, level_requirement, tradable, stackable, description)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
-       ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, base_stats = EXCLUDED.base_stats`,
+      `INSERT INTO item_types (id, name, rarity, slot, base_stats, level_requirement, tradable, stackable, description, special)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+       ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, base_stats = EXCLUDED.base_stats, rarity = EXCLUDED.rarity, special = EXCLUDED.special`,
       [
         item.id,
         item.name,
@@ -349,6 +460,7 @@ async function seed() {
         !["fire_shard_fragment", "shard_of_silence"].includes(item.id), // vật phẩm thưởng từ quest, không cho trade
         item.stackable ?? false,
         item.description ?? null,
+        JSON.stringify(item.special ?? {}),
       ]
     );
   }

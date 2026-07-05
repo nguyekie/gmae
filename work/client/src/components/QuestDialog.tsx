@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/client";
 import { PixelSprite } from "./PixelSprite";
-import { NPC_SPRITES } from "../data/sprites";
+import { NPC_SPRITES, type NpcSpriteKey } from "../data/sprites";
 
 interface QuestObjective {
   type: string;
@@ -26,7 +26,7 @@ interface Props {
   characterId: string;
   npcId: string;
   npcName: string;
-  spriteKey: "elder" | "hunter" | "scholar" | "tablet" | "wanderer";
+  spriteKey: NpcSpriteKey;
   onClose: () => void;
   onChange: () => void;
 }

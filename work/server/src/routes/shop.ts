@@ -3,6 +3,7 @@ import { pool } from '../db.js';
 import { requireAuth, type AuthedRequest } from '../middleware/auth.js';
 import { assertOwnCharacter } from './character.js';
 import { z } from 'zod';
+import { buildWeaponInstanceStats } from '../utils/itemRarity.js';
 
 export const shopRouter = Router();
 shopRouter.use(requireAuth);
@@ -84,14 +85,9 @@ shopRouter.post('/buy', async (req: AuthedRequest, res) => {
       const itFull = itFullRes.rows[0];
       for (let i = 0; i < quantity; i++) {
         let instanceStats: any = null;
-        if (itFull && itFull.slot === 'weapon' && ["rare","epic","legendary"].includes(itFull.rarity)) {
-          const possibleStats = ["atk","def","spd"];
-          const stat = possibleStats[Math.floor(Math.random() * possibleStats.length)];
-          let bonus = 0;
-          if (itFull.rarity === 'rare') bonus = 3 + Math.floor(Math.random() * 4);
-          else if (itFull.rarity === 'epic') bonus = 6 + Math.floor(Math.random() * 7);
-          else if (itFull.rarity === 'legendary') bonus = 12 + Math.floor(Math.random() * 9);
-          instanceStats = JSON.stringify({ special: { stat, bonus }, note: 'purchased_from_shop' });
+        if (itFull && itFull.slot === 'weapon') {
+          const generated = buildWeaponInstanceStats(itFull.rarity, 'purchased_from_shop');
+          if (generated) instanceStats = JSON.stringify(generated);
         }
         if (instanceStats) {
           await client.query(
@@ -190,6 +186,7 @@ shopRouter.post('/sell', async (req: AuthedRequest, res) => {
       if (rarity === 'rare') unitBuyback = 20;
       else if (rarity === 'epic') unitBuyback = 100;
       else if (rarity === 'legendary') unitBuyback = 400;
+      else if (rarity === 'sss_plus') unitBuyback = 1600;
       else unitBuyback = 8;
     }
     const buyback = unitBuyback * sellQty;

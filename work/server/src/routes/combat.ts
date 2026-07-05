@@ -5,6 +5,7 @@ import { pool } from "../db.js";
 import { requireAuth, type AuthedRequest } from "../middleware/auth.js";
 import { assertOwnCharacter, computeEquipmentBonus } from "./character.js";
 import { applyKillProgress } from "./quest.js";
+import { buildWeaponInstanceStats } from "../utils/itemRarity.js";
 
 function expToNextLevel(level: number) {
   return Math.floor(100 * Math.pow(level, 1.5));
@@ -40,15 +41,10 @@ async function rollDrops(client: any, characterId: string, monster: any): Promis
     ]);
     const it = itRes.rows[0];
     let instanceStats: any = {};
-    // Attach instance-level special stats for weapons of rarity Rare+ (rare, epic, legendary)
-    if (it && it.slot === "weapon" && ["rare", "epic", "legendary"].includes(it.rarity)) {
-      const possibleStats = ["atk", "def", "spd"];
-      const stat = possibleStats[Math.floor(Math.random() * possibleStats.length)];
-      let bonus = 0;
-      if (it.rarity === "rare") bonus = 3 + Math.floor(Math.random() * 4); // 3-6
-      else if (it.rarity === "epic") bonus = 6 + Math.floor(Math.random() * 7); // 6-12
-      else if (it.rarity === "legendary") bonus = 12 + Math.floor(Math.random() * 9); // 12-20
-      instanceStats = { special: { stat, bonus }, note: `dropped_from_${monster.id}` };
+    // Attach instance-level special stats for weapons of rarity Rare+ and SSS+
+    if (it && it.slot === "weapon") {
+      const generated = buildWeaponInstanceStats(it.rarity, `dropped_from_${monster.id}`);
+      if (generated) instanceStats = generated;
     }
 
     if (it && it.stackable) {
@@ -369,14 +365,9 @@ export function buildCombatRouter(io: SocketServer) {
             } else {
               // for non-stackable weapons of Rare+, generate instance special stats
               let instanceStats: any = { note: `special_drop_from_${monster.id}` };
-              if (it && it.slot === 'weapon' && ["rare","epic","legendary"].includes(it.rarity)) {
-                const possibleStats = ["atk", "def", "spd"];
-                const stat = possibleStats[Math.floor(Math.random() * possibleStats.length)];
-                let bonus = 0;
-                if (it.rarity === "rare") bonus = 3 + Math.floor(Math.random() * 4);
-                else if (it.rarity === "epic") bonus = 6 + Math.floor(Math.random() * 7);
-                else if (it.rarity === "legendary") bonus = 12 + Math.floor(Math.random() * 9);
-                instanceStats.special = { stat, bonus };
+              if (it && it.slot === 'weapon') {
+                const generated = buildWeaponInstanceStats(it.rarity, `special_drop_from_${monster.id}`);
+                if (generated) instanceStats = generated;
               }
               const inserted = await client.query(
                 "INSERT INTO item_instances (item_type_id, owner_character_id, location, instance_stats) VALUES ($1,$2,'inventory',$3) RETURNING id",
@@ -429,14 +420,9 @@ export function buildCombatRouter(io: SocketServer) {
           } else {
             // For non-stackable weapon rewards, include scaled instance special stats
             let instanceStats: any = { note: `boss_kill_reward_${monster.id}` };
-            if (it && it.slot === 'weapon' && ["rare","epic","legendary"].includes(it.rarity)) {
-              const possibleStats = ["atk", "def", "spd"];
-              const stat = possibleStats[Math.floor(Math.random() * possibleStats.length)];
-              let bonus = 0;
-              if (it.rarity === "rare") bonus = 3 + Math.floor(Math.random() * 4);
-              else if (it.rarity === "epic") bonus = 6 + Math.floor(Math.random() * 7);
-              else if (it.rarity === "legendary") bonus = 12 + Math.floor(Math.random() * 9);
-              instanceStats.special = { stat, bonus };
+            if (it && it.slot === 'weapon') {
+              const generated = buildWeaponInstanceStats(it.rarity, `boss_kill_reward_${monster.id}`);
+              if (generated) instanceStats = generated;
             }
             const inserted = await client.query(
               "INSERT INTO item_instances (item_type_id, owner_character_id, location, instance_stats) VALUES ($1,$2,'inventory',$3) RETURNING id",

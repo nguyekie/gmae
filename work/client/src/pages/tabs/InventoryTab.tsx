@@ -6,7 +6,7 @@ interface InventoryItem {
   id: string;
   quantity: number;
   name: string;
-  rarity: "common" | "rare" | "epic" | "legendary";
+  rarity: "common" | "rare" | "epic" | "legendary" | "sss_plus";
   slot: string;
   base_stats: Record<string, number>;
   tradable: boolean;

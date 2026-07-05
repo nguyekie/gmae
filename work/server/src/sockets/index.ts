@@ -37,7 +37,7 @@ interface PendingChallenge {
   expiresAt: number;
 }
 
-export function setupSockets(httpServer: HTTPServer, clientOrigin: string) {
+export function setupSockets(httpServer: HTTPServer, clientOrigin: string | string[]) {
   const io = new Server(httpServer, {
     cors: { origin: clientOrigin },
   });

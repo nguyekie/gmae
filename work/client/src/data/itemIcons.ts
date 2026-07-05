@@ -6,14 +6,14 @@ import type { SpriteMatrix } from "./sprites";
 // (viền do CSS .item-icon--{rarity} đảm nhiệm, xem components.css).
 export const ITEM_SLOT_ICONS: Record<string, SpriteMatrix> = {
   weapon: [
-    "......X.",
-    ".....X..",
-    "....XY..",
-    "...XY...",
-    "..XY....",
-    ".XY.....",
-    "X.......",
-    "........",
+    ".....XX.",
+    "....XXY.",
+    "...XXY..",
+    "..XXY...",
+    ".XXY.X..",
+    "XXYXXX..",
+    ".XXX....",
+    "..X.....",
   ],
   armor: [
     "..XXXX..",
@@ -99,6 +99,8 @@ export const ITEM_SLOT_ICONS: Record<string, SpriteMatrix> = {
 
 export function getRarityIconPalette(rarity: string): Record<string, string> {
   switch (rarity) {
+    case "sss_plus":
+      return { X: "#ff5f7d", Y: "#ffd36b" };
     case "legendary":
       return { X: "#e0a93e", Y: "#fbe7b5" };
     case "epic":

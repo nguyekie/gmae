@@ -3,6 +3,7 @@ import { z } from "zod";
 import type { PoolClient } from "pg";
 import { pool } from "../db.js";
 import { requireAuth, type AuthedRequest } from "../middleware/auth.js";
+import { buildWeaponInstanceStats } from "../utils/itemRarity.js";
 import { assertOwnCharacter } from "./character.js";
 
 export const questRouter = Router();
@@ -205,16 +206,11 @@ questRouter.post("/turn-in", async (req: AuthedRequest, res) => {
       const itRes = await client.query('SELECT rarity, slot FROM item_types WHERE id = $1', [itemTypeId]);
       const it = itRes.rows[0];
       let inserted;
-      if (it && it.slot === 'weapon' && ["rare","epic","legendary"].includes(it.rarity)) {
-        const possibleStats = ["atk","def","spd"];
-        const stat = possibleStats[Math.floor(Math.random() * possibleStats.length)];
-        let bonus = 0;
-        if (it.rarity === 'rare') bonus = 3 + Math.floor(Math.random() * 4);
-        else if (it.rarity === 'epic') bonus = 6 + Math.floor(Math.random() * 7);
-        else if (it.rarity === 'legendary') bonus = 12 + Math.floor(Math.random() * 9);
+      if (it && it.slot === 'weapon') {
+        const generated = buildWeaponInstanceStats(it.rarity, 'quest_reward');
         inserted = await client.query(
           "INSERT INTO item_instances (item_type_id, owner_character_id, location, instance_stats) VALUES ($1,$2,'inventory',$3) RETURNING id",
-          [itemTypeId, characterId, JSON.stringify({ special: { stat, bonus }, note: 'quest_reward' })]
+          [itemTypeId, characterId, JSON.stringify(generated ?? { note: 'quest_reward' })]
         );
       } else {
         inserted = await client.query(

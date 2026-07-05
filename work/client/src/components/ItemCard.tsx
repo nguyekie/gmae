@@ -4,7 +4,7 @@ import { ITEM_SLOT_ICONS, getRarityIconPalette } from "../data/itemIcons";
 
 interface ItemLike {
   name: string;
-  rarity: "common" | "rare" | "epic" | "legendary";
+  rarity: "common" | "rare" | "epic" | "legendary" | "sss_plus";
   slot?: string;
   base_stats?: Record<string, number> | null;
   instance_stats?: any;
@@ -15,6 +15,7 @@ const RARITY_LABEL: Record<string, string> = {
   rare: "Hiếm",
   epic: "Quý",
   legendary: "Huyền thoại",
+  sss_plus: "SSS+",
 };
 
 const SLOT_LABEL: Record<string, string> = {
@@ -86,6 +87,11 @@ export function ItemCard({ item, footer, onClick }: ItemCardProps) {
               {(item as any).special.skill && (
                 <div className="item-card__skill">Kỹ năng: <strong>{(item as any).special.skill.name}</strong> — {(item as any).special.skill.description}</div>
               )}
+            </div>
+          )}
+          {item.rarity === "sss_plus" && (
+            <div className="item-card__special-meta">
+              <div className="item-card__passive">Đặc quyền: tỉ lệ boss drop +% và sát thương boss tăng mạnh.</div>
             </div>
           )}
       {footer && <div className="item-card__footer">{footer}</div>}

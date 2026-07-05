@@ -9,7 +9,7 @@ interface ShopItem {
   price: number;
   stock: number;
   name: string;
-  rarity: "common" | "rare" | "epic" | "legendary";
+  rarity: "common" | "rare" | "epic" | "legendary" | "sss_plus";
   slot: string;
   base_stats: Record<string, number>;
 }

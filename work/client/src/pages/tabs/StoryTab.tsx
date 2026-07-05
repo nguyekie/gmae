@@ -40,12 +40,43 @@ const QUEST_STEPS: QuestStep[] = [
     objective: "Đánh bại Vệ Thần Mộ Đá để mở khóa khu vực sâu hơn của hầm mộ.",
   },
   {
-    levelRequirement: 11,
-    title: "Chương 5 — Tro Tàn Của Sự Thật",
-    npc: "Hồn Ma Tro Tàn",
+    levelRequirement: 13,
+    title: "Chương 5 — Sứ Giả Vực Thẳm",
+    npc: "Lữ Khách Bí Ẩn",
     dialogue:
-      "\"Ta từng là một Người Thức Tỉnh, như ngươi... Đại Vỡ Vụn không phải tai nạn. Có kẻ đã cố tình phá vỡ 5 Lõi Nguyên Tố. Hãy tìm ra ai, trước khi lịch sử lặp lại.\"",
-    objective: "Đánh bại Hồn Ma Tro Tàn và tìm Mảnh Vỡ Lõi Lửa — chương tiếp theo đang được biên soạn.",
+      "\"Ta đã dò được dấu vết dẫn sâu vào Vực Thẳm — những Kẻ Rình Rập Hư Không đang tụ tập gần lối vào. Hãy giúp ta loại bỏ chúng và tìm manh mối.\"",
+    objective: "Đánh bại 3 Kẻ Rình Rập Hư Không tại Vực Thẳm Hư Không.",
+  },
+  {
+    levelRequirement: 15,
+    title: "Chương 6 — Thám Hiểm Rạn Nứt",
+    npc: "Học Giả Rạn",
+    dialogue:
+      "\"Cổng Rạn Nứt mở ra — bên trong có nhiều nguyên liệu quý và cỗ máy bảo vệ. Hãy tiêu diệt Thợ Săn Vực Thẳm để tiến vào sâu hơn.\"",
+    objective: "Đánh bại 4 Thợ Săn Vực Thẳm tại Cánh Đồng Rạn Nứt.",
+  },
+  {
+    levelRequirement: 17,
+    title: "Chương 7 — Sụp Đổ Cỗ Máy",
+    npc: "Học Giả Rạn",
+    dialogue: "\"Cỗ Máy Rạn Nứt được kích hoạt — tiêu diệt nó để ngăn dòng năng lượng hủy hoại bản đồ.\"",
+    objective: "Đánh bại Cỗ Máy Rạn Nứt — vết tạo rạn sẽ hiển lộ một Lõi Nguyên Tố khác.",
+  },
+  {
+    levelRequirement: 19,
+    title: "Chương 8 — Lời Thề (rẽ nhánh chọn phe)",
+    npc: "Chỉ Huy Vera hoặc Hiệp Sĩ Kael",
+    dialogue:
+      "Tại Đồng Bằng Tro Tàn, hai tiếng nói đối lập chờ đợi: Vera của Hội Bảo Tồn muốn niêm phong sức mạnh mảnh vỡ; Kael của Liên Minh Thức Tỉnh muốn dùng nó để tái thiết Etheria. Chỉ có thể thề trung thành với MỘT trong hai — lựa chọn này không thể đổi lại.",
+    objective: "Đánh bại 4 Cướp Tro Tàn (theo Vera) hoặc 4 Cấu Trúc Nổi Loạn (theo Kael) để hoàn thành lời thề.",
+  },
+  {
+    levelRequirement: 21,
+    title: "Chương 9 — Thánh Kỵ Sĩ Sa Ngã",
+    npc: "(không có NPC — gặp trực tiếp tại Đồng Bằng Tro Tàn)",
+    dialogue:
+      "Một hiệp sĩ từng bảo vệ Etheria đã ngã quỵ trước sức mạnh mảnh vỡ hắn tìm thấy — giờ hắn chỉ còn là vỏ bọc hắc ám của lời thề đã vỡ. Dù bạn chọn phe nào ở Chương 8, đây vẫn là việc phải làm.",
+    objective: "Đánh bại Thánh Kỵ Sĩ Sa Ngã — chương tiếp theo đang được biên soạn.",
   },
 ];
 
