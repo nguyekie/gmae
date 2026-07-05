@@ -1,6 +1,6 @@
 [build]
   base = "work/client"
-  publish = "work/client/dist"
+  publish = "dist"
   command = "npm install && npm run build"
 
 [[redirects]]
