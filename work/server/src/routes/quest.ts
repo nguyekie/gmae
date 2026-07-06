@@ -9,6 +9,17 @@ import { assertOwnCharacter } from "./character.js";
 export const questRouter = Router();
 questRouter.use(requireAuth);
 
+questRouter.get("/completed/:characterId", async (req: AuthedRequest, res) => {
+  const character = await assertOwnCharacter(req.userId!, req.params.characterId);
+  if (!character) return res.status(404).json({ error: "Không tìm thấy nhân vật" });
+
+  const result = await pool.query<{ quest_id: string }>(
+    "SELECT quest_id FROM character_quests WHERE character_id = $1 AND status = 'completed'",
+    [req.params.characterId]
+  );
+  res.json({ completedQuestIds: result.rows.map((row) => row.quest_id) });
+});
+
 interface QuestObjective {
   type: "kill";
   targetId: string;

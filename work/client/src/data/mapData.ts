@@ -37,6 +37,9 @@ export interface PortalDef {
   spawnX: number;
   spawnY: number;
   label: string;
+  unlockQuestIds?: string[];
+  unlockMode?: "all" | "any";
+  lockedLabel?: string;
 }
 
 export interface ZoneDef {
@@ -137,13 +140,52 @@ const OATHFORGE_GRID = [
   "#..#####........#####..#",
   "#..#................#..#",
   "#..#.....######.....#..#",
-  ">.......##....##.......#",
+  ">.......##....##.......>",
   "#.......##....##.......#",
   "#..#.....######.....#..#",
   "#..#................#..#",
   "#..#####........#####..#",
   "#......................#",
   "########################",
+];
+
+const FIRE_CLUSTER_GRID = [
+  "####################",
+  "#..****....****....#",
+  "#.*##**....**##*...#",
+  ">..*^^*....*^^*....#",
+  "#....**####**......#",
+  "#..*....**....*....#",
+  "#.*##*......*##*...#",
+  "#....*^^**^^*......>",
+  "#..****....****....#",
+  "####################",
+];
+
+const ICE_CLUSTER_GRID = [
+  "####################",
+  "#..====....====....#",
+  "#.=ii==....==ii=...#",
+  ">..=............=..#",
+  "#..=..iiiiii..=....#",
+  "#..====....====....#",
+  "#.=ii=......=ii=...#",
+  "#..=............=..>",
+  "#..====....====....#",
+  "####################",
+];
+
+const WATER_CLUSTER_GRID = [
+  "####################",
+  "#..wwww....wwww....#",
+  "#.ww~~~~..~~~~ww...#",
+  ">..ww~~....~~ww....#",
+  "#....wwwwwwww......#",
+  "#..ww........ww....#",
+  "#.ww~~~~..~~~~ww...#",
+  "#....ww....ww......#",
+  "#..wwww....wwww....#",
+  "####################",
 ];
 
 export const ZONES: Record<string, ZoneDef> = {
@@ -175,7 +217,7 @@ export const ZONES: Record<string, ZoneDef> = {
     ],
     portals: [
       { x: 0, y: 8, toZone: "starting_village", spawnX: 14, spawnY: 8, label: "← Làng Khởi Nguyên" },
-      { x: 15, y: 4, toZone: "shattered_tomb", spawnX: 1, spawnY: 8, label: "Hầm Mộ Đá Vỡ →" },
+      { x: 15, y: 4, toZone: "shattered_tomb", spawnX: 1, spawnY: 8, label: "Hầm Mộ Đá Vỡ →", unlockQuestIds: ["quest_shadow_in_the_deep_woods"], lockedLabel: "Hoàn thành Chương 2 để vào Hầm Mộ Đá Vỡ" },
     ],
     defaultSpawn: { x: 2, y: 1 },
   },
@@ -192,7 +234,7 @@ export const ZONES: Record<string, ZoneDef> = {
     ],
     portals: [
       { x: 0, y: 8, toZone: "whispering_forest", spawnX: 14, spawnY: 4, label: "← Rừng Thì Thầm" },
-      { x: 15, y: 4, toZone: "void_abyss", spawnX: 1, spawnY: 4, label: "Vực Thẳm Hư Không →" },
+      { x: 15, y: 4, toZone: "void_abyss", spawnX: 1, spawnY: 4, label: "Vực Thẳm Hư Không →", unlockQuestIds: ["quest_guardian_fall"], lockedLabel: "Hoàn thành Chương 4 để mở Vực Thẳm Hư Không" },
     ],
     defaultSpawn: { x: 1, y: 7 },
   },
@@ -218,7 +260,7 @@ export const ZONES: Record<string, ZoneDef> = {
     ],
     portals: [
       { x: 0, y: 4, toZone: "shattered_tomb", spawnX: 14, spawnY: 4, label: "← Hầm Mộ Đá Vỡ" },
-      { x: 14, y: 4, toZone: "rift_fields", spawnX: 0, spawnY: 4, label: "Rạn Nứt →" },
+      { x: 14, y: 4, toZone: "rift_fields", spawnX: 0, spawnY: 4, label: "Cánh Đồng Rạn Nứt →", unlockQuestIds: ["quest_herald_of_silence"], lockedLabel: "Hoàn thành Chương 5 để vào Cánh Đồng Rạn Nứt" },
     ],
     defaultSpawn: { x: 8, y: 1 },
   },
@@ -236,7 +278,7 @@ export const ZONES: Record<string, ZoneDef> = {
     ],
     portals: [
       { x: 0, y: 4, toZone: "void_abyss", spawnX: 14, spawnY: 4, label: "← Vực Thẳm Hư Không" },
-      { x: 17, y: 8, toZone: "ashfall_plains", spawnX: 1, spawnY: 3, label: "Đồng Bằng Tro Tàn →" },
+      { x: 17, y: 8, toZone: "ashfall_plains", spawnX: 1, spawnY: 3, label: "Đồng Bằng Tro Tàn →", unlockQuestIds: ["quest_construct_down"], lockedLabel: "Hoàn thành Chương 7 để tới Đồng Bằng Tro Tàn" },
     ],
     defaultSpawn: { x: 8, y: 1 },
   },
@@ -267,7 +309,7 @@ export const ZONES: Record<string, ZoneDef> = {
     ],
     portals: [
       { x: 0, y: 3, toZone: "rift_fields", spawnX: 14, spawnY: 8, label: "← Cánh Đồng Rạn Nứt" },
-      { x: 19, y: 8, toZone: "oathforge_depths", spawnX: 1, spawnY: 5, label: "Lò Rèn Lời Thề →" },
+      { x: 19, y: 8, toZone: "oathforge_depths", spawnX: 1, spawnY: 5, label: "Lò Rèn Lời Thề →", unlockQuestIds: ["quest_ashfall_oath_vera", "quest_ashfall_oath_kael"], unlockMode: "any", lockedLabel: "Hoàn thành một nhánh Chương 8 để xuống Lò Rèn Lời Thề" },
     ],
     defaultSpawn: { x: 1, y: 3 },
   },
@@ -289,8 +331,62 @@ export const ZONES: Record<string, ZoneDef> = {
       { spawnId: "oathbreaker_1", monsterId: "oathbreaker_knight", name: "Kỵ Sĩ Bội Ước", sprite: "oathbreaker_knight", x: 10, y: 9, respawnMs: 52000 },
       { spawnId: "oathbreaker_2", monsterId: "oathbreaker_knight", name: "Kỵ Sĩ Bội Ước", sprite: "oathbreaker_knight", x: 13, y: 9, respawnMs: 52000 },
     ],
-    portals: [{ x: 0, y: 5, toZone: "ashfall_plains", spawnX: 18, spawnY: 8, label: "← Đồng Bằng Tro Tàn" }],
+    portals: [
+      { x: 0, y: 5, toZone: "ashfall_plains", spawnX: 18, spawnY: 8, label: "← Đồng Bằng Tro Tàn" },
+      { x: 23, y: 5, toZone: "fire_cluster", spawnX: 1, spawnY: 3, label: "Vùng Đất Lửa →", unlockQuestIds: ["quest_fallen_paladin_vera", "quest_fallen_paladin_kael"], unlockMode: "any", lockedLabel: "Hoàn thành Chương 9 để mở Vùng Đất Lửa" },
+    ],
     defaultSpawn: { x: 1, y: 5 },
+  },
+
+  fire_cluster: {
+    id: "fire_cluster",
+    name: "Vùng Đất Lửa",
+    grid: FIRE_CLUSTER_GRID,
+    npcs: [{ id: "npc_rift_scribe", name: "Học Giả Rạn", sprite: "scholar", x: 9, y: 1 }],
+    spawns: [
+      { spawnId: "ember_colossus_1", monsterId: "ember_colossus", name: "Khổng Tượng Dung Nham", sprite: "flame_colossus", x: 5, y: 4, respawnMs: 42000 },
+      { spawnId: "ember_colossus_2", monsterId: "ember_colossus", name: "Khổng Tượng Dung Nham", sprite: "flame_colossus", x: 14, y: 4, respawnMs: 42000 },
+      { spawnId: "ember_colossus_3", monsterId: "ember_colossus", name: "Khổng Tượng Dung Nham", sprite: "flame_colossus", x: 9, y: 7, respawnMs: 42000 },
+      { spawnId: "ember_phoenix_1", monsterId: "ember_phoenix", name: "Phượng Hoàng Tro Đỏ", sprite: "ember_phoenix", x: 10, y: 2, respawnMs: 48000 },
+    ],
+    portals: [
+      { x: 0, y: 3, toZone: "oathforge_depths", spawnX: 22, spawnY: 5, label: "← Lò Rèn Lời Thề" },
+      { x: 19, y: 7, toZone: "ice_cluster", spawnX: 1, spawnY: 3, label: "Vùng Đất Băng →", unlockQuestIds: ["quest_fire_cluster"], lockedLabel: "Hoàn thành Chương 10 để mở Vùng Đất Băng" },
+    ],
+    defaultSpawn: { x: 1, y: 3 },
+  },
+
+  ice_cluster: {
+    id: "ice_cluster",
+    name: "Vùng Đất Băng",
+    grid: ICE_CLUSTER_GRID,
+    npcs: [{ id: "npc_rift_scribe", name: "Học Giả Rạn", sprite: "scholar", x: 9, y: 1 }],
+    spawns: [
+      { spawnId: "frost_archon_1", monsterId: "frostbound_archon", name: "Chấp Chính Băng Phong", sprite: "frost_archon", x: 5, y: 4, respawnMs: 46000 },
+      { spawnId: "frost_archon_2", monsterId: "frostbound_archon", name: "Chấp Chính Băng Phong", sprite: "frost_archon", x: 14, y: 4, respawnMs: 46000 },
+      { spawnId: "frost_archon_3", monsterId: "frostbound_archon", name: "Chấp Chính Băng Phong", sprite: "frost_archon", x: 9, y: 7, respawnMs: 46000 },
+      { spawnId: "crystal_yeti_1", monsterId: "crystal_yeti", name: "Cự Nhân Pha Lê Băng", sprite: "crystal_yeti", x: 10, y: 2, respawnMs: 52000 },
+    ],
+    portals: [
+      { x: 0, y: 3, toZone: "fire_cluster", spawnX: 18, spawnY: 7, label: "← Vùng Đất Lửa" },
+      { x: 19, y: 7, toZone: "water_cluster", spawnX: 1, spawnY: 3, label: "Vùng Đất Nước →", unlockQuestIds: ["quest_ice_cluster"], lockedLabel: "Hoàn thành Chương 11 để mở Vùng Đất Nước" },
+    ],
+    defaultSpawn: { x: 1, y: 3 },
+  },
+
+  water_cluster: {
+    id: "water_cluster",
+    name: "Vùng Đất Nước",
+    grid: WATER_CLUSTER_GRID,
+    npcs: [{ id: "npc_rift_scribe", name: "Học Giả Rạn", sprite: "scholar", x: 9, y: 1 }],
+    spawns: [
+      { spawnId: "tide_serpent_1", monsterId: "tide_serpent", name: "Giao Long Triều Sâu", sprite: "tide_serpent", x: 5, y: 4, respawnMs: 52000 },
+      { spawnId: "tide_serpent_2", monsterId: "tide_serpent", name: "Giao Long Triều Sâu", sprite: "tide_serpent", x: 14, y: 4, respawnMs: 52000 },
+      { spawnId: "tide_serpent_3", monsterId: "tide_serpent", name: "Giao Long Triều Sâu", sprite: "tide_serpent", x: 9, y: 8, respawnMs: 52000 },
+      { spawnId: "abyssal_manta_1", monsterId: "abyssal_manta", name: "Manta Vực Triều", sprite: "abyssal_manta", x: 10, y: 2, respawnMs: 56000 },
+    ],
+    portals: [{ x: 0, y: 3, toZone: "ice_cluster", spawnX: 18, spawnY: 7, label: "← Vùng Đất Băng" }],
+    defaultSpawn: { x: 1, y: 3 },
   },
 };
 
@@ -305,7 +401,7 @@ export function getZoneRows(zone: ZoneDef): number {
 export function isBlocked(zone: ZoneDef, x: number, y: number): boolean {
   if (y < 0 || y >= zone.grid.length || x < 0 || x >= zone.grid[y].length) return true;
   const tile = zone.grid[y][x];
-  return !tile || tile === "#" || tile === "~";
+  return !tile || tile === "#" || tile === "~" || tile === "^" || tile === "i";
 }
 
 export function findPortal(zone: ZoneDef, x: number, y: number): PortalDef | undefined {

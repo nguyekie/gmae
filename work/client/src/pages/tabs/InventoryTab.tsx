@@ -6,9 +6,10 @@ interface InventoryItem {
   id: string;
   quantity: number;
   name: string;
-  rarity: "common" | "rare" | "epic" | "legendary" | "sss_plus";
+  rarity: "common" | "rare" | "epic" | "legendary" | "mythic" | "sss_plus";
   slot: string;
   base_stats: Record<string, number>;
+  level_requirement: number;
   tradable: boolean;
   stackable: boolean;
   instance_stats?: any;

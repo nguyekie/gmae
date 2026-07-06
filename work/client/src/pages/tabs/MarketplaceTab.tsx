@@ -8,9 +8,10 @@ interface Listing {
   seller_character_id: string;
   seller_name: string;
   name: string;
-  rarity: "common" | "rare" | "epic" | "legendary" | "sss_plus";
+  rarity: "common" | "rare" | "epic" | "legendary" | "mythic" | "sss_plus";
   slot: string;
   base_stats: Record<string, number>;
+  level_requirement: number;
   instance_stats?: Record<string, any>;
 }
 

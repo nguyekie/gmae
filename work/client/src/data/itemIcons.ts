@@ -101,6 +101,8 @@ export function getRarityIconPalette(rarity: string): Record<string, string> {
   switch (rarity) {
     case "sss_plus":
       return { X: "#ff5f7d", Y: "#ffd36b" };
+    case "mythic":
+      return { X: "#43d9c7", Y: "#b8fff7" };
     case "legendary":
       return { X: "#e0a93e", Y: "#fbe7b5" };
     case "epic":

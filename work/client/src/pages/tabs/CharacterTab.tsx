@@ -20,6 +20,8 @@ interface Props {
 
 export function CharacterTab({ detail, onChange }: Props) {
   const { character, equipment, computedStats } = detail;
+  const companionBonus = detail.companionBonus ?? { atk: 0, def: 0, spd: 0, hp: 0, mp: 0 };
+  const companionEntries = Object.entries(companionBonus).filter(([, value]) => value > 0);
 
   async function unequip(slotType: string) {
     await api.post("/inventory/unequip", { characterId: character.id, slotType });
@@ -53,6 +55,18 @@ export function CharacterTab({ detail, onChange }: Props) {
           <div>Sức tấn công (ATK): <span style={{ color: "var(--text-primary)" }}>{computedStats.atk}</span></div>
           <div>Phòng thủ (DEF): <span style={{ color: "var(--text-primary)" }}>{computedStats.def}</span></div>
           <div>Tốc độ (SPD): <span style={{ color: "var(--text-primary)" }}>{computedStats.spd}</span></div>
+          <div>HP tối đa: <span style={{ color: "var(--text-primary)" }}>{computedStats.maxHp}</span></div>
+          <div>MP tối đa: <span style={{ color: "var(--text-primary)" }}>{computedStats.maxMp}</span></div>
+          <div>Lực chiến: <span style={{ color: "var(--accent-shard)" }}>{detail.powerScore.toLocaleString("vi-VN")}</span></div>
+        </div>
+      </div>
+
+      <div className="zone-card" style={{ marginBottom: 24 }}>
+        <div className="zone-card__name">Trợ thủ đi cùng</div>
+        <div className="zone-card__desc">
+          {companionEntries.length === 0
+            ? "Chưa có trợ thủ đang đi cùng hoặc trợ thủ chưa cộng chỉ số."
+            : companionEntries.map(([stat, value]) => `${stat.toUpperCase()} +${value}`).join(" · ")}
         </div>
       </div>
 

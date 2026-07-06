@@ -78,7 +78,13 @@ export type MonsterSpriteKey =
   | "ashbound_sentinel"
   | "shard_smith_echo"
   | "oathbreaker_knight"
-  | "fallen_paladin";
+  | "fallen_paladin"
+  | "flame_colossus"
+  | "ember_phoenix"
+  | "frost_archon"
+  | "crystal_yeti"
+  | "tide_serpent"
+  | "abyssal_manta";
 
 export const MONSTER_SPRITES: Record<MonsterSpriteKey, { matrix: SpriteMatrix; palette: Record<string, string> }> = {
   slime: {
@@ -277,5 +283,83 @@ export const MONSTER_SPRITES: Record<MonsterSpriteKey, { matrix: SpriteMatrix; p
       "K..KK..K",
     ],
     palette: { K: "#1c1a22", G: "#c9a24b", R: "#8b1e2e" },
+  },
+  flame_colossus: {
+    matrix: [
+      ".F.FF.F.",
+      "FFFFFFFF",
+      "FLOFFOLF",
+      "FFFFFFFF",
+      ".FLLLLF.",
+      "FF.FF.FF",
+      "F..FF..F",
+      "F..FF..F",
+    ],
+    palette: { F: "#7a2416", L: "#e4572e", O: "#ffd166" },
+  },
+  ember_phoenix: {
+    matrix: [
+      "P..PP..P",
+      ".P.PP.P.",
+      "PPPOOPPP",
+      ".PPOOPP.",
+      "..PPPP..",
+      ".P.PP.P.",
+      "P..PP..P",
+      "...PP...",
+    ],
+    palette: { P: "#e4572e", O: "#ffd166" },
+  },
+  frost_archon: {
+    matrix: [
+      "..IIII..",
+      ".ICCCCI.",
+      "ICBICBCI",
+      "ICCCCCCI",
+      "..IIII..",
+      ".I.II.I.",
+      "I..II..I",
+      "...II...",
+    ],
+    palette: { I: "#b8fff7", C: "#5fb6d9", B: "#1d3b5f" },
+  },
+  crystal_yeti: {
+    matrix: [
+      ".YYYYYY.",
+      "YYIIIIYY",
+      "YIBYYBIY",
+      "YYIIIIYY",
+      ".YYYYYY.",
+      "Y.Y..Y.Y",
+      "Y.Y..Y.Y",
+      "..Y..Y..",
+    ],
+    palette: { Y: "#d9fffb", I: "#7cc8e8", B: "#1d3b5f" },
+  },
+  tide_serpent: {
+    matrix: [
+      "...WW...",
+      "..WWWW..",
+      ".WAAWWW.",
+      "WWWWAAWW",
+      ".WWWWWW.",
+      "..WWWW..",
+      ".W.WW.W.",
+      "W..WW..W",
+    ],
+    palette: { W: "#2e86ab", A: "#b8fff7" },
+  },
+  abyssal_manta: {
+    matrix: [
+      "M......M",
+      ".MM..MM.",
+      "MMMMMMMM",
+      "MMAMMAMM",
+      ".MMMMMM.",
+      "..MMMM..",
+      "...MM...",
+      "..M..M..",
+    ],
+    palette: { M: "#174c67", A: "#8fd7d0" },
   },
 };

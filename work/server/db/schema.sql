@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS characters (
 CREATE TABLE IF NOT EXISTS item_types (
   id VARCHAR(64) PRIMARY KEY,
   name VARCHAR(64) NOT NULL,
-  rarity VARCHAR(16) NOT NULL CHECK (rarity IN ('common','rare','epic','legendary','sss_plus')),
+  rarity VARCHAR(16) NOT NULL CHECK (rarity IN ('common','rare','epic','legendary','mythic','sss_plus')),
   slot VARCHAR(16) NOT NULL CHECK (slot IN ('weapon','armor','helmet','gloves','boots','trinket','shard','consumable','material')),
   base_stats JSONB NOT NULL DEFAULT '{}',
   level_requirement INT NOT NULL DEFAULT 1,
@@ -49,7 +49,7 @@ ALTER TABLE IF EXISTS item_types ADD COLUMN IF NOT EXISTS stackable BOOLEAN NOT 
 ALTER TABLE IF EXISTS item_types ADD COLUMN IF NOT EXISTS description TEXT;
 ALTER TABLE IF EXISTS item_types ADD COLUMN IF NOT EXISTS special JSONB NOT NULL DEFAULT '{}';
 ALTER TABLE IF EXISTS item_types DROP CONSTRAINT IF EXISTS item_types_rarity_check;
-ALTER TABLE IF EXISTS item_types ADD CONSTRAINT item_types_rarity_check CHECK (rarity IN ('common','rare','epic','legendary','sss_plus'));
+ALTER TABLE IF EXISTS item_types ADD CONSTRAINT item_types_rarity_check CHECK (rarity IN ('common','rare','epic','legendary','mythic','sss_plus'));
 ALTER TABLE IF EXISTS item_types DROP CONSTRAINT IF EXISTS item_types_slot_check;
 ALTER TABLE IF EXISTS item_types ADD CONSTRAINT item_types_slot_check CHECK (slot IN ('weapon','armor','helmet','gloves','boots','trinket','shard','consumable','material'));
 

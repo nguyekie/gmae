@@ -4,9 +4,10 @@ import { ITEM_SLOT_ICONS, getRarityIconPalette } from "../data/itemIcons";
 
 interface ItemLike {
   name: string;
-  rarity: "common" | "rare" | "epic" | "legendary" | "sss_plus";
+  rarity: "common" | "rare" | "epic" | "legendary" | "mythic" | "sss_plus";
   slot?: string;
   base_stats?: Record<string, number> | null;
+  level_requirement?: number;
   instance_stats?: any;
 }
 
@@ -15,6 +16,7 @@ const RARITY_LABEL: Record<string, string> = {
   rare: "Hiếm",
   epic: "Quý",
   legendary: "Huyền thoại",
+  mythic: "Thần thoại",
   sss_plus: "SSS+",
 };
 
@@ -64,6 +66,9 @@ export function ItemCard({ item, footer, onClick }: ItemCardProps) {
         {item.slot && <span className="item-card__slot">{SLOT_LABEL[item.slot] ?? item.slot}</span>}
       </div>
       <div className="item-card__name">{item.name}</div>
+      {typeof item.level_requirement === "number" && (
+        <div className="item-card__requirement">Cần cấp {item.level_requirement}</div>
+      )}
       {item.base_stats && Object.keys(item.base_stats).length > 0 && (
         <div className="item-card__stats">
           {Object.entries(item.base_stats).map(([k, v]) => (

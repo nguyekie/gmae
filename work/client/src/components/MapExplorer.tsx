@@ -13,6 +13,7 @@ import {
   findPortal,
   type NpcDef,
   type MonsterSpawnDef,
+  type PortalDef,
 } from "../data/mapData";
 import { PLAYER_PALETTES, NPC_SPRITES, MONSTER_SPRITES, HUMANOID } from "../data/sprites";
 
@@ -57,6 +58,11 @@ const TILE_CLASS: Record<string, string> = {
   ",": "map-tile map-tile--path",
   "#": "map-tile map-tile--tree",
   "~": "map-tile map-tile--water",
+  "^": "map-tile map-tile--lava",
+  "*": "map-tile map-tile--ash",
+  "=": "map-tile map-tile--ice",
+  "i": "map-tile map-tile--crystal",
+  "w": "map-tile map-tile--shallows",
   ">": "map-tile map-tile--portal",
 };
 
@@ -73,8 +79,30 @@ export function MapExplorer({ zoneId, spawnPoint, characterId, characterName, ch
   const [nearNpc, setNearNpc] = useState<NpcDef | null>(null);
   const [tracker, setTracker] = useState<QuestTrackerEntry[]>([]);
   const [bossStates, setBossStates] = useState<Record<string, BossState>>({});
+  const [completedQuestIds, setCompletedQuestIds] = useState<Set<string>>(new Set());
+  const [portalMessage, setPortalMessage] = useState<string | null>(null);
 
   const bossSpawns = zone.spawns.filter((s) => s.isBoss);
+
+  const isPortalUnlocked = useCallback(
+    (portal: PortalDef) => {
+      if (!portal.unlockQuestIds || portal.unlockQuestIds.length === 0) return true;
+      if (portal.unlockMode === "any") return portal.unlockQuestIds.some((id) => completedQuestIds.has(id));
+      return portal.unlockQuestIds.every((id) => completedQuestIds.has(id));
+    },
+    [completedQuestIds]
+  );
+
+  const refreshCompletedQuests = useCallback(() => {
+    api
+      .get(`/quests/completed/${characterId}`)
+      .then((res) => setCompletedQuestIds(new Set(res.data.completedQuestIds ?? [])))
+      .catch(() => setCompletedQuestIds(new Set()));
+  }, [characterId]);
+
+  useEffect(() => {
+    refreshCompletedQuests();
+  }, [refreshCompletedQuests]);
 
   const refreshBossStates = useCallback(() => {
     for (const spawn of bossSpawns) {
@@ -215,6 +243,11 @@ export function MapExplorer({ zoneId, spawnPoint, characterId, characterName, ch
 
         const portal = findPortal(zone, nx, ny);
         if (portal) {
+          if (!isPortalUnlocked(portal)) {
+            setPortalMessage(portal.lockedLabel ?? "Cần hoàn thành nhiệm vụ trước khi sang vùng đất tiếp theo.");
+            window.setTimeout(() => setPortalMessage(null), 2800);
+            return prev;
+          }
           onPortal(portal.toZone, portal.spawnX, portal.spawnY);
           return prev;
         }
@@ -226,7 +259,7 @@ export function MapExplorer({ zoneId, spawnPoint, characterId, characterName, ch
         return { x: nx, y: ny };
       });
     },
-    [characterId, zone, onPortal]
+    [characterId, zone, onPortal, isPortalUnlocked]
   );
 
   const interact = useCallback(() => {
@@ -302,6 +335,7 @@ export function MapExplorer({ zoneId, spawnPoint, characterId, characterName, ch
 
   function handleQuestChange() {
     onChange();
+    refreshCompletedQuests();
     refreshTracker();
   }
 
@@ -323,7 +357,7 @@ export function MapExplorer({ zoneId, spawnPoint, characterId, characterName, ch
         {zone.portals.map((p) => (
           <div
             key={`${p.x}-${p.y}`}
-            className="map-portal-label"
+            className={`map-portal-label${isPortalUnlocked(p) ? "" : " map-portal-label--locked"}`}
             style={{ left: p.x * TILE_SIZE, top: p.y * TILE_SIZE - 16, width: TILE_SIZE }}
           >
             {p.label}
@@ -411,6 +445,7 @@ export function MapExplorer({ zoneId, spawnPoint, characterId, characterName, ch
             Nhấn <kbd>Enter</kbd> để nói chuyện với {nearNpc.name}
           </div>
         )}
+        {portalMessage && <div className="map-interact-hint map-interact-hint--locked">{portalMessage}</div>}
       </div>
 
       <div className="map-controls">

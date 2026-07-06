@@ -13,7 +13,7 @@ inventoryRouter.get("/:characterId", async (req: AuthedRequest, res) => {
   if (!character) return res.status(404).json({ error: "Không tìm thấy nhân vật" });
 
   const result = await pool.query(
-    `SELECT ii.id, ii.quantity, ii.instance_stats, it.name, it.rarity, it.slot, it.base_stats, it.tradable, it.stackable
+    `SELECT ii.id, ii.quantity, ii.instance_stats, it.name, it.rarity, it.slot, it.base_stats, it.level_requirement, it.tradable, it.stackable
      FROM item_instances ii
      JOIN item_types it ON it.id = ii.item_type_id
      WHERE ii.owner_character_id = $1 AND ii.location = 'inventory'

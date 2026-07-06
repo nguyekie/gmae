@@ -305,6 +305,7 @@
 .item-card--rare { border-color: var(--rarity-rare); box-shadow: 0 0 12px rgba(74,144,217,0.15); }
 .item-card--epic { border-color: var(--rarity-epic); box-shadow: 0 0 12px rgba(168,85,247,0.18); }
 .item-card--legendary { border-color: var(--rarity-legendary); box-shadow: 0 0 16px rgba(224,169,62,0.25); }
+.item-card--mythic { border-color: var(--rarity-mythic); box-shadow: 0 0 18px rgba(67,217,199,0.24); }
 .item-card--sss_plus { border-color: var(--rarity-sss-plus); box-shadow: 0 0 20px rgba(255,95,125,0.28); }
 
 .item-card__header {
@@ -323,6 +324,7 @@
 .item-card__rarity--rare { color: var(--rarity-rare); }
 .item-card__rarity--epic { color: var(--rarity-epic); }
 .item-card__rarity--legendary { color: var(--rarity-legendary); }
+.item-card__rarity--mythic { color: var(--rarity-mythic); text-shadow: 0 0 8px rgba(67,217,199,0.3); }
 .item-card__rarity--sss_plus { color: var(--rarity-sss-plus); text-shadow: 0 0 8px rgba(255,95,125,0.35); }
 
 .item-card__slot {
@@ -334,6 +336,13 @@
   font-weight: 600;
   font-size: 14px;
   margin-bottom: 6px;
+}
+
+.item-card__requirement {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent-shard);
+  margin-bottom: 8px;
 }
 
 .item-card__stats {
@@ -454,6 +463,16 @@
 
   .equip-grid {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+
+  .leaderboard-row {
+    grid-template-columns: 42px 1fr;
+  }
+
+  .leaderboard-row__stats,
+  .leaderboard-row__power {
+    grid-column: 2;
+    text-align: left;
   }
 }
 
@@ -680,6 +699,54 @@
   color: var(--text-muted);
 }
 
+.leaderboard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: 54px minmax(160px, 1fr) minmax(220px, auto) 120px;
+  gap: 12px;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--surface-line);
+  border-radius: 4px;
+  padding: 12px 14px;
+}
+
+.leaderboard-row--self {
+  border-color: var(--accent-shard);
+  box-shadow: 0 0 14px var(--accent-shard-glow);
+}
+
+.leaderboard-row__rank,
+.leaderboard-row__power {
+  font-family: var(--font-mono);
+  color: var(--accent-shard);
+  font-weight: 700;
+}
+
+.leaderboard-row__name {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.leaderboard-row__meta,
+.leaderboard-row__stats {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.leaderboard-row__stats {
+  font-family: var(--font-mono);
+}
+
+.leaderboard-row__power {
+  text-align: right;
+}
+
 /* ============ Bản đồ khám phá (2D walkable map) ============ */
 .map-viewport {
   position: relative;
@@ -699,6 +766,11 @@
 .map-tile--path { background: #4a3f2c; }
 .map-tile--tree { background: #1a2c19; box-shadow: inset 0 0 0 2px #0f1c0e; }
 .map-tile--water { background: #1f4a5c; box-shadow: inset 0 0 0 2px #163a49; }
+.map-tile--lava { background: #8b1e1e; box-shadow: inset 0 0 0 2px #e4572e, 0 0 10px rgba(228, 87, 46, 0.28); }
+.map-tile--ash { background: #45312b; box-shadow: inset 0 0 0 1px #6f3d25; }
+.map-tile--ice { background: #4b7f9f; box-shadow: inset 0 0 0 1px #b8fff7; }
+.map-tile--crystal { background: #8fd7d0; box-shadow: inset 0 0 0 2px #d9fffb, 0 0 10px rgba(143, 215, 208, 0.35); }
+.map-tile--shallows { background: #2e6f88; box-shadow: inset 0 0 0 1px #6fc7db; }
 
 .map-entity {
   position: absolute;
@@ -1190,6 +1262,17 @@
   z-index: 2;
 }
 
+.map-portal-label--locked {
+  color: var(--danger);
+  text-decoration: line-through;
+  opacity: 0.85;
+}
+
+.map-interact-hint--locked {
+  border-color: var(--danger);
+  color: #f2a49e;
+}
+
 /* ============ Chọn số lượng khi mua ở Cửa hàng ============ */
 .qty-stepper {
   display: flex;
@@ -1238,6 +1321,7 @@
 }
 
 /* ============ Icon vật phẩm ============ */
+.item-card__icon {
   display: flex;
   justify-content: center;
   align-items: center;

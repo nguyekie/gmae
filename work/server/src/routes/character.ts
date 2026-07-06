@@ -14,6 +14,10 @@ const CLASS_BASE_STATS: Record<string, { hp: number; mp: number; atk: number; de
 
 const EQUIPMENT_SLOTS = ["weapon", "armor", "helmet", "gloves", "boots", "trinket", "shard"];
 
+export function computePowerScore(stats: { atk: number; def: number; spd: number; maxHp: number; maxMp: number }, level: number) {
+  return Math.floor(stats.atk * 12 + stats.def * 10 + stats.spd * 8 + stats.maxHp * 0.55 + stats.maxMp * 0.35 + level * 35);
+}
+
 const createSchema = z.object({
   name: z.string().min(2).max(32),
   class: z.enum(["warrior", "mage", "archer"]),
@@ -26,6 +30,34 @@ characterRouter.get("/", async (req: AuthedRequest, res) => {
     [req.userId]
   );
   res.json({ characters: result.rows });
+});
+
+characterRouter.get("/leaderboard/power", async (_req: AuthedRequest, res) => {
+  const result = await pool.query(
+    "SELECT id, name, class, level, max_hp, max_mp, base_atk, base_def, base_spd FROM characters"
+  );
+  const entries = [];
+  for (const character of result.rows) {
+    const gearBonus = await computeEquipmentBonus(character.id);
+    const companionBonus = await computeCompanionBonus(character.id);
+    const computedStats = {
+      atk: character.base_atk + gearBonus.atk + companionBonus.atk,
+      def: character.base_def + gearBonus.def + companionBonus.def,
+      spd: character.base_spd + gearBonus.spd + companionBonus.spd,
+      maxHp: character.max_hp + gearBonus.hp + companionBonus.hp,
+      maxMp: character.max_mp + gearBonus.mp + companionBonus.mp,
+    };
+    entries.push({
+      id: character.id,
+      name: character.name,
+      class: character.class,
+      level: character.level,
+      powerScore: computePowerScore(computedStats, character.level),
+      computedStats,
+    });
+  }
+  entries.sort((a, b) => b.powerScore - a.powerScore || b.level - a.level || a.name.localeCompare(b.name));
+  res.json({ leaderboard: entries.slice(0, 50) });
 });
 
 // Tạo nhân vật mới
@@ -161,13 +193,14 @@ export async function assertOwnCharacter(userId: string, characterId: string) {
   return result.rows[0] ?? null;
 }
 
+
 // Chi tiết 1 nhân vật (chỉ số tổng hợp = base + đồ đang mặc)
 characterRouter.get("/:id", async (req: AuthedRequest, res) => {
   const character = await assertOwnCharacter(req.userId!, req.params.id);
   if (!character) return res.status(404).json({ error: "Không tìm thấy nhân vật" });
 
   const equipped = await pool.query(
-    `SELECT es.slot_type, ii.id as item_instance_id, it.name, it.rarity, it.base_stats, ii.instance_stats
+    `SELECT es.slot_type, ii.id as item_instance_id, it.name, it.rarity, it.base_stats, it.level_requirement, ii.instance_stats
      FROM equipment_slots es
      LEFT JOIN item_instances ii ON ii.id = es.item_instance_id
      LEFT JOIN item_types it ON it.id = ii.item_type_id
@@ -185,15 +218,19 @@ characterRouter.get("/:id", async (req: AuthedRequest, res) => {
     mp: gearBonus.mp + companionBonus.mp,
   };
 
+  const computedStats = {
+    atk: character.base_atk + bonus.atk,
+    def: character.base_def + bonus.def,
+    spd: character.base_spd + bonus.spd,
+    maxHp: character.max_hp + bonus.hp,
+    maxMp: character.max_mp + bonus.mp,
+  };
+
   res.json({
     character,
     equipment: equipped.rows,
-    computedStats: {
-      atk: character.base_atk + bonus.atk,
-      def: character.base_def + bonus.def,
-      spd: character.base_spd + bonus.spd,
-      maxHp: character.max_hp + bonus.hp,
-      maxMp: character.max_mp + bonus.mp,
-    },
+    companionBonus,
+    powerScore: computePowerScore(computedStats, character.level),
+    computedStats,
   });
 });

@@ -227,3 +227,21 @@ Gợi ý triển khai:
 ---
 
 Nếu bạn muốn điều chỉnh mức tăng cụ thể (ví dụ rare = +1–4 thay vì +3–6), tôi có thể cập nhật nhanh trong code và re-seed/test. Tôi cũng có thể thêm hiển thị rõ ràng trong UI (Item tooltip) để hiển thị `instance_stats.special` và cho phép lọc/search trong marketplace theo thuộc tính instance.
+## 12. Mở khóa vùng đất bằng nhiệm vụ
+
+Quyết định thiết kế mới: màn Khám phá không hiển thị danh sách map để chọn trực tiếp. Người chơi chỉ di chuyển giữa các vùng bằng cổng trong bản đồ, và mỗi cổng sang vùng kế tiếp kiểm tra nhiệm vụ đã hoàn thành.
+
+Chuỗi mở khóa:
+- Hầm Mộ Đá Vỡ: hoàn thành Chương 2.
+- Vực Thẳm Hư Không: hoàn thành Chương 4.
+- Cánh Đồng Rạn Nứt: hoàn thành Chương 5.
+- Đồng Bằng Tro Tàn: hoàn thành Chương 7.
+- Lò Rèn Lời Thề: hoàn thành một nhánh Chương 8.
+- Vùng Đất Lửa: hoàn thành một nhánh Chương 9.
+- Vùng Đất Băng: hoàn thành Chương 10.
+- Vùng Đất Nước: hoàn thành Chương 11.
+
+Ba vùng đất nguyên tố cuối game có tạo hình và quái biểu tượng riêng:
+- Vùng Đất Lửa: dung nham, tro nóng, Khổng Tượng Dung Nham, Phượng Hoàng Tro Đỏ.
+- Vùng Đất Băng: nền băng, tinh thể, Chấp Chính Băng Phong, Cự Nhân Pha Lê Băng.
+- Vùng Đất Nước: nước nông/sâu, Giao Long Triều Sâu, Manta Vực Triều.

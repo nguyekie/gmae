@@ -13,7 +13,7 @@ shopRouter.get('/', async (_req: AuthedRequest, res) => {
   try {
     const shops = await pool.query('SELECT id, name, description FROM shops');
     const items = await pool.query(
-      `SELECT si.id, si.shop_id, si.item_type_id, si.price, si.stock, it.name, it.rarity, it.slot, it.base_stats
+      `SELECT si.id, si.shop_id, si.item_type_id, si.price, si.stock, it.name, it.rarity, it.slot, it.base_stats, it.level_requirement
        FROM shop_items si JOIN item_types it ON it.id = si.item_type_id`
     );
     res.json({ shops: shops.rows, items: items.rows });
@@ -186,6 +186,7 @@ shopRouter.post('/sell', async (req: AuthedRequest, res) => {
       if (rarity === 'rare') unitBuyback = 20;
       else if (rarity === 'epic') unitBuyback = 100;
       else if (rarity === 'legendary') unitBuyback = 400;
+      else if (rarity === 'mythic') unitBuyback = 900;
       else if (rarity === 'sss_plus') unitBuyback = 1600;
       else unitBuyback = 8;
     }
@@ -272,6 +273,7 @@ shopRouter.post('/materials/exchange', async (req: AuthedRequest, res) => {
     if (item.rarity === 'rare') unit = 20;
     else if (item.rarity === 'epic') unit = 80;
     else if (item.rarity === 'legendary') unit = 300;
+    else if (item.rarity === 'mythic') unit = 700;
 
     const goldReceived = unit * qty;
     await client.query('UPDATE characters SET gold = gold + $1 WHERE id = $2', [goldReceived, characterId]);
