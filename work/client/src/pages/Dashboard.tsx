@@ -14,12 +14,18 @@ import { ShopTab } from "./tabs/ShopTab";
 import { CraftingTab } from "./tabs/CraftingTab";
 import { CompanionsTab } from "./tabs/CompanionsTab";
 import { LeaderboardTab } from "./tabs/LeaderboardTab";
+import { DailyTasksTab } from "./tabs/DailyTasksTab";
 import { ShardBar } from "../components/ShardBar";
 import { PixelSprite } from "../components/PixelSprite";
 import { PvpBattleOverlay, type PvpResultData } from "../components/PvpBattleOverlay";
 import { HUMANOID, PLAYER_PALETTES } from "../data/sprites";
 
 const CLASS_LABEL: Record<string, string> = { warrior: "Chiến Binh", mage: "Pháp Sư", archer: "Xạ Thủ" };
+const APPEARANCE_PALETTES: Record<string, Record<string, string>> = {
+  fortune_fox: { H: "#f5d7a1", S: "#e3b389", E: "#1a1a1a", B: "#d88f45", L: "#7a4a22" },
+  void_child: { H: "#1c1f2b", S: "#c9a877", E: "#c17ee9", B: "#2e1f3c", L: "#17121f" },
+  shard_king: { H: "#c9a24b", S: "#e3b389", E: "#1a1a1a", B: "#5fb6d9", L: "#1d3b5f" },
+};
 
 export interface CharacterDetail {
   character: {
@@ -33,12 +39,35 @@ export interface CharacterDetail {
     mp: number;
     max_mp: number;
     gold: number;
+    potential: number;
+    potential_strength: number;
+    potential_vitality: number;
+    potential_agility: number;
+    potential_luck: number;
     base_atk: number;
     base_def: number;
     base_spd: number;
   };
-  equipment: Array<{ slot_type: string; item_instance_id: string | null; name: string | null; rarity: string | null; base_stats: Record<string, number> | null; level_requirement?: number | null }>;
+  equipment: Array<{ slot_type: string; item_instance_id: string | null; name: string | null; rarity: string | null; base_stats: Record<string, number> | null; level_requirement?: number | null; special?: any }>;
   companionBonus: { atk: number; def: number; spd: number; hp: number; mp: number };
+  potentialBonus?: {
+    levels: { strength: number; vitality: number; agility: number; luck: number };
+    stats: { atk: number; def: number; spd: number; hp: number; mp: number };
+    combat: { dodgeRate: number; dropRate: number; goldGain: number; sssPlusDropRate: number };
+    breakthroughs: {
+      strengthTier: number;
+      vitalityTier: number;
+      agilityTier: number;
+      luckTier: number;
+      skillDamageBonus: number;
+      damageReduction: number;
+      perfectDodgeRate: number;
+      counterRate: number;
+      extraDropRolls: number;
+    };
+    nextCosts: { strength: number; vitality: number; agility: number; luck: number };
+  };
+  specialBonus?: { dropRate: number; exp: number; power: number; potentialPerHour: number };
   powerScore: number;
   computedStats: { atk: number; def: number; spd: number; maxHp: number; maxMp: number };
 }
@@ -148,7 +177,12 @@ export function Dashboard() {
     );
   }
 
-  const { character } = detail;
+  const { character, computedStats } = detail;
+  const appearance = detail.equipment.find((e) => e.slot_type === "costume")?.special?.appearance as string | undefined;
+  const characterPalette = (appearance && APPEARANCE_PALETTES[appearance]) || PLAYER_PALETTES[character.class];
+  const bonusMp = Math.max(0, computedStats.maxMp - character.max_mp);
+  const currentHp = Math.min(computedStats.maxHp, character.hp);
+  const effectiveMp = Math.min(computedStats.maxMp, character.mp + bonusMp);
 
   return (
     <div className="app-shell">
@@ -161,7 +195,7 @@ export function Dashboard() {
 
         <div className="sidebar__char">
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <PixelSprite matrix={HUMANOID} palette={PLAYER_PALETTES[character.class]} size={56} bob />
+            <PixelSprite matrix={HUMANOID} palette={characterPalette} size={56} bob />
             <div>
               <div className="sidebar__char-name">{character.name}</div>
               <div className="sidebar__char-meta">
@@ -169,8 +203,8 @@ export function Dashboard() {
               </div>
             </div>
           </div>
-          <ShardBar label="HP" value={character.hp} max={character.max_hp} colorVar="--elem-fire" />
-          <ShardBar label="MP" value={character.mp} max={character.max_mp} colorVar="--elem-water" />
+          <ShardBar label="HP" value={currentHp} max={computedStats.maxHp} colorVar="--elem-fire" />
+          <ShardBar label="MP" value={effectiveMp} max={computedStats.maxMp} colorVar="--elem-water" />
           <div className="sidebar__gold">💰 {character.gold.toLocaleString("vi-VN")} vàng</div>
         </div>
 
@@ -186,6 +220,9 @@ export function Dashboard() {
           </NavLink>
           <NavLink to={`/play/${characterId}/explore`} className={({ isActive }) => `nav-item ${isActive ? "nav-item--active" : ""}`}>
             ⚔️ Khám phá
+          </NavLink>
+          <NavLink to={`/play/${characterId}/daily-tasks`} className={({ isActive }) => `nav-item ${isActive ? "nav-item--active" : ""}`}>
+            Nhiệm vụ ngày
           </NavLink>
           <NavLink to={`/play/${characterId}/friends`} className={({ isActive }) => `nav-item ${isActive ? "nav-item--active" : ""}`}>
             👥 Bạn bè
@@ -232,10 +269,13 @@ export function Dashboard() {
                 characterId={characterId!}
                 characterName={character.name}
                 characterClass={character.class as "warrior" | "mage" | "archer"}
+                characterLevel={character.level}
+                appearance={appearance}
                 onChange={refresh}
               />
             }
           />
+          <Route path="daily-tasks" element={<DailyTasksTab characterId={characterId!} onChange={refresh} />} />
           <Route path="friends" element={<FriendsTab characterId={characterId!} />} />
           <Route path="chat" element={<ChatTab characterId={characterId} />} />
           <Route path="shop" element={<ShopTab characterId={characterId!} gold={character.gold} onChange={refresh} />} />

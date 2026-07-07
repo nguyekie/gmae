@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Đổi giá trị này bằng URL backend thật khi deploy (hoặc dùng biến môi trường VITE_API_URL)
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+const API_BASE_URL = import.meta.env.VITE_API_URL || `${window.location.protocol}//${window.location.hostname}:4000`;
 
 export const api = axios.create({ baseURL: `${API_BASE_URL}/api` });
 

@@ -36,11 +36,24 @@ interface QuestTrackerEntry {
   ready: boolean;
 }
 
+interface ActiveCompanion {
+  id: string;
+  name: string;
+  active: boolean;
+}
+
 interface BossState {
   currentHp: number;
   maxHp: number;
   dead: boolean;
   respawnInSeconds: number;
+}
+
+interface QuickConsumable {
+  id: string;
+  name: string;
+  quantity: number;
+  base_stats: Record<string, number>;
 }
 
 interface Props {
@@ -49,6 +62,8 @@ interface Props {
   characterId: string;
   characterName: string;
   characterClass: "warrior" | "mage" | "archer";
+  characterLevel: number;
+  appearance?: string;
   onChange: () => void;
   onPortal: (toZone: string, x: number, y: number) => void;
 }
@@ -66,7 +81,28 @@ const TILE_CLASS: Record<string, string> = {
   ">": "map-tile map-tile--portal",
 };
 
-export function MapExplorer({ zoneId, spawnPoint, characterId, characterName, characterClass, onChange, onPortal }: Props) {
+const COMPANION_SPRITES: Record<string, { matrix: string[]; palette: Record<string, string> }> = {
+  lyra_falcon: {
+    matrix: ["........", "..WWWW..", ".WYYWYW.", "WWWWWWWW", "..W..W..", ".W....W.", "........", "........"],
+    palette: { W: "#8fd7d0", Y: "#ffd166" },
+  },
+  rift_sprite: {
+    matrix: ["........", "...VV...", "..VYYV..", ".VYYYYV.", "..VYYV..", "...VV...", "....V...", "........"],
+    palette: { V: "#9b6bd9", Y: "#d9fffb" },
+  },
+  oath_guardian: {
+    matrix: ["..SSSS..", ".SSGGSS.", ".SGSSGS.", ".SSSSSS.", "..SSSS..", "..S..S..", ".S....S.", "........"],
+    palette: { S: "#8b93a1", G: "#e0a93e" },
+  },
+};
+
+const APPEARANCE_PALETTES: Record<string, Record<string, string>> = {
+  fortune_fox: { H: "#f5d7a1", S: "#e3b389", E: "#1a1a1a", B: "#d88f45", L: "#7a4a22" },
+  void_child: { H: "#1c1f2b", S: "#c9a877", E: "#c17ee9", B: "#2e1f3c", L: "#17121f" },
+  shard_king: { H: "#c9a24b", S: "#e3b389", E: "#1a1a1a", B: "#5fb6d9", L: "#1d3b5f" },
+};
+
+export function MapExplorer({ zoneId, spawnPoint, characterId, characterName, characterClass, characterLevel, appearance, onChange, onPortal }: Props) {
   const zone = ZONES[zoneId];
   const zoneCols = getZoneCols(zone);
   const zoneRows = getZoneRows(zone);
@@ -81,16 +117,22 @@ export function MapExplorer({ zoneId, spawnPoint, characterId, characterName, ch
   const [bossStates, setBossStates] = useState<Record<string, BossState>>({});
   const [completedQuestIds, setCompletedQuestIds] = useState<Set<string>>(new Set());
   const [portalMessage, setPortalMessage] = useState<string | null>(null);
+  const [activeCompanion, setActiveCompanion] = useState<ActiveCompanion | null>(null);
+  const [dungeonRemaining, setDungeonRemaining] = useState<number | null>(zone.timeLimitSeconds ?? null);
+  const [quickItems, setQuickItems] = useState<QuickConsumable[]>([]);
+  const [usingQuickItemId, setUsingQuickItemId] = useState<string | null>(null);
+  const [quickItemMessage, setQuickItemMessage] = useState<string | null>(null);
 
   const bossSpawns = zone.spawns.filter((s) => s.isBoss);
 
   const isPortalUnlocked = useCallback(
     (portal: PortalDef) => {
+      if (portal.requiredLevel && characterLevel < portal.requiredLevel) return false;
       if (!portal.unlockQuestIds || portal.unlockQuestIds.length === 0) return true;
       if (portal.unlockMode === "any") return portal.unlockQuestIds.some((id) => completedQuestIds.has(id));
       return portal.unlockQuestIds.every((id) => completedQuestIds.has(id));
     },
-    [completedQuestIds]
+    [characterLevel, completedQuestIds]
   );
 
   const refreshCompletedQuests = useCallback(() => {
@@ -103,6 +145,51 @@ export function MapExplorer({ zoneId, spawnPoint, characterId, characterName, ch
   useEffect(() => {
     refreshCompletedQuests();
   }, [refreshCompletedQuests]);
+
+  const refreshQuickItems = useCallback(() => {
+    api
+      .get(`/inventory/${characterId}`)
+      .then((res) => {
+        const consumables = (res.data.items ?? []).filter(
+          (item: QuickConsumable & { slot: string }) =>
+            item.slot === "consumable" && item.quantity > 0 && ((item.base_stats?.heal ?? 0) > 0 || (item.base_stats?.mana ?? 0) > 0)
+        );
+        setQuickItems(consumables);
+      })
+      .catch(() => setQuickItems([]));
+  }, [characterId]);
+
+  useEffect(() => {
+    refreshQuickItems();
+  }, [refreshQuickItems]);
+
+  useEffect(() => {
+    if (!zone.timeLimitSeconds) {
+      setDungeonRemaining(null);
+      return;
+    }
+    const start = Date.now();
+    setDungeonRemaining(zone.timeLimitSeconds);
+    const interval = window.setInterval(() => {
+      const remaining = Math.max(0, zone.timeLimitSeconds! - Math.floor((Date.now() - start) / 1000));
+      setDungeonRemaining(remaining);
+      if (remaining <= 0) {
+        window.clearInterval(interval);
+        onPortal("starting_village", 1, 8);
+      }
+    }, 1000);
+    return () => window.clearInterval(interval);
+  }, [zoneId, zone.timeLimitSeconds, onPortal]);
+
+  useEffect(() => {
+    api
+      .get(`/companions/${characterId}`)
+      .then((res) => {
+        const active = (res.data.companions ?? []).find((c: ActiveCompanion) => c.active);
+        setActiveCompanion(active ?? null);
+      })
+      .catch(() => setActiveCompanion(null));
+  }, [characterId]);
 
   const refreshBossStates = useCallback(() => {
     for (const spawn of bossSpawns) {
@@ -244,7 +331,7 @@ export function MapExplorer({ zoneId, spawnPoint, characterId, characterName, ch
         const portal = findPortal(zone, nx, ny);
         if (portal) {
           if (!isPortalUnlocked(portal)) {
-            setPortalMessage(portal.lockedLabel ?? "Cần hoàn thành nhiệm vụ trước khi sang vùng đất tiếp theo.");
+            setPortalMessage(portal.lockedLabel ?? (portal.requiredLevel ? `Cần cấp ${portal.requiredLevel} để vào khu vực này.` : "Cần hoàn thành nhiệm vụ trước khi sang vùng đất tiếp theo."));
             window.setTimeout(() => setPortalMessage(null), 2800);
             return prev;
           }
@@ -339,7 +426,37 @@ export function MapExplorer({ zoneId, spawnPoint, characterId, characterName, ch
     refreshTracker();
   }
 
-  const palette = PLAYER_PALETTES[characterClass];
+  async function useQuickItem(item: QuickConsumable) {
+    setUsingQuickItemId(item.id);
+    setQuickItemMessage(null);
+    try {
+      await api.post("/inventory/use", { characterId, itemInstanceId: item.id });
+      setQuickItemMessage(`Đã dùng ${item.name}`);
+      refreshQuickItems();
+      onChange();
+      window.setTimeout(() => setQuickItemMessage(null), 2200);
+    } catch (err: any) {
+      setQuickItemMessage(err.response?.data?.error ?? "Không thể dùng vật phẩm");
+      window.setTimeout(() => setQuickItemMessage(null), 2800);
+    } finally {
+      setUsingQuickItemId(null);
+    }
+  }
+
+  const palette = (appearance && APPEARANCE_PALETTES[appearance]) || PLAYER_PALETTES[characterClass];
+  const companionSprite = activeCompanion ? COMPANION_SPRITES[activeCompanion.id] ?? COMPANION_SPRITES.rift_sprite : null;
+  const companionOffset =
+    dir === "left" ? { x: 1, y: 0 } : dir === "right" ? { x: -1, y: 0 } : dir === "up" ? { x: 0, y: 1 } : { x: -1, y: 0 };
+  const companionPos = {
+    x: Math.max(0, Math.min(zoneCols - 1, pos.x + companionOffset.x)),
+    y: Math.max(0, Math.min(zoneRows - 1, pos.y + companionOffset.y)),
+  };
+  const hpPotion = quickItems
+    .filter((item) => (item.base_stats?.heal ?? 0) > 0)
+    .sort((a, b) => (b.base_stats?.heal ?? 0) - (a.base_stats?.heal ?? 0))[0];
+  const mpPotion = quickItems
+    .filter((item) => (item.base_stats?.mana ?? 0) > 0)
+    .sort((a, b) => (b.base_stats?.mana ?? 0) - (a.base_stats?.mana ?? 0))[0];
 
   return (
     <div>
@@ -390,6 +507,7 @@ export function MapExplorer({ zoneId, spawnPoint, characterId, characterName, ch
                 style={{ left: spawn.x * TILE_SIZE, top: spawn.y * TILE_SIZE, width: TILE_SIZE, height: TILE_SIZE }}
               >
                 {spawn.isBoss && <div className="map-entity__boss-tag">BOSS</div>}
+                {spawn.isElite && !spawn.isBoss && <div className="map-entity__boss-tag">ELITE</div>}
                 <PixelSprite matrix={sprite.matrix} palette={sprite.palette} size={spawn.isBoss ? TILE_SIZE * 1.4 : TILE_SIZE} bob />
                 <div className="map-entity__label">{spawn.name}</div>
                 {boss && (
@@ -423,6 +541,16 @@ export function MapExplorer({ zoneId, spawnPoint, characterId, characterName, ch
           <div className="map-entity__label map-entity__label--self">{characterName}</div>
         </div>
 
+        {activeCompanion && companionSprite && (
+          <div
+            className="map-entity map-entity--companion"
+            style={{ left: companionPos.x * TILE_SIZE + 9, top: companionPos.y * TILE_SIZE + 10, width: TILE_SIZE, height: TILE_SIZE }}
+          >
+            <PixelSprite matrix={companionSprite.matrix} palette={companionSprite.palette} size={30} bob />
+            <div className="map-entity__label map-entity__label--companion">{activeCompanion.name}</div>
+          </div>
+        )}
+
         {tracker.length > 0 && (
           <div className="quest-tracker">
             <div className="quest-tracker__title">📜 Nhiệm vụ</div>
@@ -437,6 +565,12 @@ export function MapExplorer({ zoneId, spawnPoint, characterId, characterName, ch
                 {t.ready && <div className="quest-tracker__ready">→ Quay lại {t.npcName} để trả nhiệm vụ</div>}
               </div>
             ))}
+          </div>
+        )}
+
+        {dungeonRemaining !== null && (
+          <div className="map-dungeon-timer">
+            Dungeon còn {Math.floor(dungeonRemaining / 60)}:{String(dungeonRemaining % 60).padStart(2, "0")}
           </div>
         )}
 
@@ -466,6 +600,15 @@ export function MapExplorer({ zoneId, spawnPoint, characterId, characterName, ch
         <button className="btn-secondary" disabled={!nearNpc} onClick={interact}>
           💬 Nói chuyện
         </button>
+        <div className="map-quick-items">
+          <button className="small-btn" disabled={!hpPotion || !!usingQuickItemId} onClick={() => hpPotion && useQuickItem(hpPotion)}>
+            HP {hpPotion ? `x${hpPotion.quantity}` : "0"}
+          </button>
+          <button className="small-btn" disabled={!mpPotion || !!usingQuickItemId} onClick={() => mpPotion && useQuickItem(mpPotion)}>
+            MP {mpPotion ? `x${mpPotion.quantity}` : "0"}
+          </button>
+          {quickItemMessage && <span className="map-quick-items__message">{quickItemMessage}</span>}
+        </div>
       </div>
 
       {combatTarget && (
@@ -474,6 +617,7 @@ export function MapExplorer({ zoneId, spawnPoint, characterId, characterName, ch
           monsterId={combatTarget.monsterId}
           monsterName={combatTarget.name}
           spriteKey={combatTarget.sprite}
+          characterClass={characterClass}
           isBoss={combatTarget.isBoss}
           onClose={handleCombatClose}
           onChange={onChange}

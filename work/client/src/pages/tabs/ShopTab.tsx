@@ -13,6 +13,7 @@ interface ShopItem {
   slot: string;
   base_stats: Record<string, number>;
   level_requirement: number;
+  special?: any;
 }
 
 interface Shop {

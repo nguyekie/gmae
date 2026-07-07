@@ -13,6 +13,8 @@ import { chatRouter } from "./routes/chat.js";
 import { shopRouter } from "./routes/shop.js";
 import { craftingRouter } from "./routes/crafting.js";
 import { companionsRouter } from "./routes/companions.js";
+import { dailyTasksRouter } from "./routes/dailyTasks.js";
+import { autoFarmRouter } from "./routes/autoFarm.js";
 import { setupSockets } from "./sockets/index.js";
 
 dotenv.config();
@@ -27,6 +29,7 @@ const configuredClientOrigins = (process.env.CLIENT_ORIGIN || "")
   .filter((origin: string) => Boolean(origin));
 const clientOrigins: string[] =
   configuredClientOrigins.length > 0 ? configuredClientOrigins : localClientOrigins;
+const corsOrigin = configuredClientOrigins.length > 0 || process.env.NODE_ENV === "production" ? clientOrigins : true;
 
 if (clientOrigins.some((origin) => localClientOrigins.includes(origin))) {
   for (const origin of localClientOrigins) {
@@ -34,10 +37,10 @@ if (clientOrigins.some((origin) => localClientOrigins.includes(origin))) {
   }
 }
 
-app.use(cors({ origin: clientOrigins }));
+app.use(cors({ origin: corsOrigin }));
 app.use(express.json());
 
-const io = setupSockets(httpServer, clientOrigins);
+const io = setupSockets(httpServer, corsOrigin);
 
 app.get("/health", (_req, res) => res.json({ status: "ok" }));
 
@@ -52,6 +55,8 @@ app.use("/api/chat", chatRouter);
 app.use("/api/shops", shopRouter);
 app.use("/api/crafting", craftingRouter);
 app.use("/api/companions", companionsRouter);
+app.use("/api/daily-tasks", dailyTasksRouter);
+app.use("/api/auto-farm", autoFarmRouter);
 
 // Middleware bắt lỗi chung — luôn đặt cuối cùng
 app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {

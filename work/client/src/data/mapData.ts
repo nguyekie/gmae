@@ -27,6 +27,7 @@ export interface MonsterSpawnDef {
   x: number;
   y: number;
   respawnMs: number;
+  isElite?: boolean;
   isBoss?: boolean; // boss dùng máu bền từ server (GET /combat/boss/:monsterId) thay vì máu client tự đoán
 }
 
@@ -37,6 +38,7 @@ export interface PortalDef {
   spawnX: number;
   spawnY: number;
   label: string;
+  requiredLevel?: number;
   unlockQuestIds?: string[];
   unlockMode?: "all" | "any";
   lockedLabel?: string;
@@ -50,6 +52,7 @@ export interface ZoneDef {
   spawns: MonsterSpawnDef[];
   portals: PortalDef[];
   defaultSpawn: { x: number; y: number };
+  timeLimitSeconds?: number;
 }
 
 const VILLAGE_GRID = [
@@ -186,6 +189,19 @@ const WATER_CLUSTER_GRID = [
   "#....ww....ww......#",
   "#..wwww....wwww....#",
   "####################",
+];
+
+const RIFT_TRIAL_DUNGEON_GRID = [
+  "##################",
+  "#....==....==....#",
+  "#..####....####..#",
+  "#................#",
+  ">.....##..##.....#",
+  "#.....##..##.....#",
+  "#................#",
+  "#..####....####..#",
+  "#....==....==....#",
+  "##################",
 ];
 
 export const ZONES: Record<string, ZoneDef> = {
@@ -389,6 +405,39 @@ export const ZONES: Record<string, ZoneDef> = {
     defaultSpawn: { x: 1, y: 3 },
   },
 };
+
+ZONES.starting_village.portals.push({
+  x: 0,
+  y: 8,
+  toZone: "rift_trial_dungeon",
+  spawnX: 1,
+  spawnY: 4,
+  label: "Dungeon Rạn Nứt",
+  requiredLevel: 10,
+  lockedLabel: "Cần cấp 10 để vào Dungeon Rạn Nứt",
+});
+
+ZONES.rift_trial_dungeon = {
+  id: "rift_trial_dungeon",
+  name: "Dungeon Rạn Nứt",
+  grid: RIFT_TRIAL_DUNGEON_GRID,
+  npcs: [],
+  spawns: [
+    { spawnId: "trial_hunter_1", monsterId: "abyssal_hunter", name: "Tinh Anh Vực Thẳm", sprite: "abyssal_hunter", x: 5, y: 3, respawnMs: 30000, isElite: true },
+    { spawnId: "trial_hunter_2", monsterId: "abyssal_hunter", name: "Tinh Anh Vực Thẳm", sprite: "abyssal_hunter", x: 12, y: 6, respawnMs: 30000, isElite: true },
+    { spawnId: "trial_construct_1", monsterId: "rift_construct", name: "Hộ Vệ Dungeon", sprite: "rift_construct", x: 9, y: 4, respawnMs: 180000, isElite: true },
+  ],
+  portals: [{ x: 0, y: 4, toZone: "starting_village", spawnX: 1, spawnY: 8, label: "← Làng Khởi Nguyên" }],
+  defaultSpawn: { x: 1, y: 4 },
+  timeLimitSeconds: 600,
+};
+
+for (const spawnId of ["construct_1", "ember_phoenix_1", "crystal_yeti_1", "abyssal_manta_1"]) {
+  for (const zone of Object.values(ZONES)) {
+    const spawn = zone.spawns.find((entry) => entry.spawnId === spawnId);
+    if (spawn) spawn.isElite = true;
+  }
+}
 
 export function getZoneCols(zone: ZoneDef): number {
   return Math.max(...zone.grid.map((row) => row.length));

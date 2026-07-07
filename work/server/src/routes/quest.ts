@@ -263,11 +263,16 @@ questRouter.post("/turn-in", async (req: AuthedRequest, res) => {
 
 // Gọi từ trong transaction của combat.ts sau khi thắng trận — cập nhật tiến độ nhiệm vụ dạng "kill"
 // Không tin dữ liệu từ client: chỉ nhận characterId + monsterId (đã được server combat xác thực là có thật)
-export async function applyKillProgress(client: PoolClient, characterId: string, monsterId: string) {
-  const activeQuests = await client.query<{ id: string; objectives: QuestObjective[] }>(
-    `SELECT q.id, q.objectives FROM character_quests cq
+export async function applyKillProgress(client: PoolClient, characterId: string, monsterId: string, amount = 1) {
+  const activeQuests = await client.query<{
+    id: string;
+    objectives: QuestObjective[];
+    status: CharacterQuestRow["status"];
+    progress: Record<string, number>;
+  }>(
+    `SELECT q.id, q.objectives, cq.status, cq.progress FROM character_quests cq
      JOIN quests q ON q.id = cq.quest_id
-     WHERE cq.character_id = $1 AND cq.status = 'active' FOR UPDATE OF cq`,
+     WHERE cq.character_id = $1 AND cq.status IN ('active', 'ready_to_turn_in') FOR UPDATE OF cq`,
     [characterId]
   );
 
@@ -275,13 +280,12 @@ export async function applyKillProgress(client: PoolClient, characterId: string,
     const killObjectives = quest.objectives.filter((o) => o.type === "kill" && o.targetId === monsterId);
     if (killObjectives.length === 0) continue;
 
-    const cqResult = await client.query<{ progress: Record<string, number> }>(
-      "SELECT progress FROM character_quests WHERE character_id = $1 AND quest_id = $2",
-      [characterId, quest.id]
-    );
-    const progress = { ...cqResult.rows[0].progress };
+    const progress = { ...(quest.progress ?? {}) };
+    const wasAlreadyDone = quest.objectives.every((obj) => (progress[obj.targetId] ?? 0) >= obj.count);
+    if (wasAlreadyDone) continue;
+
     for (const obj of killObjectives) {
-      progress[obj.targetId] = Math.min((progress[obj.targetId] ?? 0) + 1, obj.count);
+      progress[obj.targetId] = Math.min((progress[obj.targetId] ?? 0) + Math.max(1, amount), obj.count);
     }
 
     const allDone = quest.objectives.every((obj) => (progress[obj.targetId] ?? 0) >= obj.count);

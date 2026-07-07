@@ -75,6 +75,16 @@ export const ITEM_SLOT_ICONS: Record<string, SpriteMatrix> = {
     "...XX...",
     "........",
   ],
+  costume: [
+    "..XXXX..",
+    ".XYYYYX.",
+    "XXYXXYXX",
+    ".XXXXXX.",
+    "..XXXX..",
+    ".XX..XX.",
+    "XX....XX",
+    "........",
+  ],
   consumable: [
     "...XX...",
     "...XX...",

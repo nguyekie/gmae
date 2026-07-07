@@ -1,0 +1,5 @@
+
+> etheria-server@1.0.0 dev
+> tsx watch src/index.ts
+
+Etheria server đang chạy tại http://localhost:4000

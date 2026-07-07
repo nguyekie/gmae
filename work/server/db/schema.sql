@@ -26,6 +26,12 @@ CREATE TABLE IF NOT EXISTS characters (
   base_def INT NOT NULL,
   base_spd INT NOT NULL,
   gold BIGINT NOT NULL DEFAULT 100,
+  potential BIGINT NOT NULL DEFAULT 0,
+  potential_strength INT NOT NULL DEFAULT 0,
+  potential_vitality INT NOT NULL DEFAULT 0,
+  potential_agility INT NOT NULL DEFAULT 0,
+  potential_luck INT NOT NULL DEFAULT 0,
+  last_potential_claim_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   faction VARCHAR(16) DEFAULT NULL,
   current_quest_step INT NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -36,7 +42,7 @@ CREATE TABLE IF NOT EXISTS item_types (
   id VARCHAR(64) PRIMARY KEY,
   name VARCHAR(64) NOT NULL,
   rarity VARCHAR(16) NOT NULL CHECK (rarity IN ('common','rare','epic','legendary','mythic','sss_plus')),
-  slot VARCHAR(16) NOT NULL CHECK (slot IN ('weapon','armor','helmet','gloves','boots','trinket','shard','consumable','material')),
+  slot VARCHAR(16) NOT NULL CHECK (slot IN ('weapon','armor','helmet','gloves','boots','trinket','shard','costume','consumable','material')),
   base_stats JSONB NOT NULL DEFAULT '{}',
   level_requirement INT NOT NULL DEFAULT 1,
   tradable BOOLEAN NOT NULL DEFAULT true,
@@ -51,7 +57,14 @@ ALTER TABLE IF EXISTS item_types ADD COLUMN IF NOT EXISTS special JSONB NOT NULL
 ALTER TABLE IF EXISTS item_types DROP CONSTRAINT IF EXISTS item_types_rarity_check;
 ALTER TABLE IF EXISTS item_types ADD CONSTRAINT item_types_rarity_check CHECK (rarity IN ('common','rare','epic','legendary','mythic','sss_plus'));
 ALTER TABLE IF EXISTS item_types DROP CONSTRAINT IF EXISTS item_types_slot_check;
-ALTER TABLE IF EXISTS item_types ADD CONSTRAINT item_types_slot_check CHECK (slot IN ('weapon','armor','helmet','gloves','boots','trinket','shard','consumable','material'));
+ALTER TABLE IF EXISTS item_types ADD CONSTRAINT item_types_slot_check CHECK (slot IN ('weapon','armor','helmet','gloves','boots','trinket','shard','costume','consumable','material'));
+
+ALTER TABLE IF EXISTS characters ADD COLUMN IF NOT EXISTS potential BIGINT NOT NULL DEFAULT 0;
+ALTER TABLE IF EXISTS characters ADD COLUMN IF NOT EXISTS potential_strength INT NOT NULL DEFAULT 0;
+ALTER TABLE IF EXISTS characters ADD COLUMN IF NOT EXISTS potential_vitality INT NOT NULL DEFAULT 0;
+ALTER TABLE IF EXISTS characters ADD COLUMN IF NOT EXISTS potential_agility INT NOT NULL DEFAULT 0;
+ALTER TABLE IF EXISTS characters ADD COLUMN IF NOT EXISTS potential_luck INT NOT NULL DEFAULT 0;
+ALTER TABLE IF EXISTS characters ADD COLUMN IF NOT EXISTS last_potential_claim_at TIMESTAMPTZ NOT NULL DEFAULT now();
 
 -- Vật phẩm thật (instance) mà người chơi sở hữu
 CREATE TABLE IF NOT EXISTS item_instances (
@@ -94,6 +107,8 @@ CREATE TABLE IF NOT EXISTS transactions (
   status VARCHAR(16) NOT NULL DEFAULT 'completed',
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+ALTER TABLE IF EXISTS transactions ALTER COLUMN type TYPE VARCHAR(32);
 
 CREATE TABLE IF NOT EXISTS monsters (
   id VARCHAR(64) PRIMARY KEY,
@@ -235,3 +250,54 @@ CREATE TABLE IF NOT EXISTS character_companions (
 CREATE UNIQUE INDEX IF NOT EXISTS idx_character_companions_one_active
   ON character_companions(character_id)
   WHERE active;
+
+-- Buff tạm thời từ bùa mua trong shop: x2 tiềm năng, x2 rơi đồ, x2 vàng khi đánh quái/boss.
+CREATE TABLE IF NOT EXISTS character_buffs (
+  character_id UUID NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
+  buff_type VARCHAR(32) NOT NULL CHECK (buff_type IN ('potential_gain','drop_rate','gold_gain')),
+  multiplier NUMERIC(6,2) NOT NULL DEFAULT 1,
+  expires_at TIMESTAMPTZ NOT NULL,
+  PRIMARY KEY (character_id, buff_type)
+);
+
+CREATE INDEX IF NOT EXISTS idx_character_buffs_expires_at ON character_buffs(expires_at);
+
+-- ===================== Daily / Weekly Tasks =====================
+-- period_key dùng dạng YYYY-MM-DD cho daily và YYYY-WNN cho weekly để tự tách chu kỳ.
+CREATE TABLE IF NOT EXISTS character_task_progress (
+  character_id UUID NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
+  task_id VARCHAR(64) NOT NULL,
+  period_key VARCHAR(16) NOT NULL,
+  progress INT NOT NULL DEFAULT 0,
+  claimed BOOLEAN NOT NULL DEFAULT false,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (character_id, task_id, period_key)
+);
+
+CREATE INDEX IF NOT EXISTS idx_character_task_progress_character
+  ON character_task_progress(character_id, period_key);
+
+-- ===================== World Boss Contribution Ranking =====================
+CREATE TABLE IF NOT EXISTS boss_damage_contributions (
+  monster_id VARCHAR(64) NOT NULL REFERENCES monsters(id) ON DELETE CASCADE,
+  character_id UUID NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
+  period_key VARCHAR(16) NOT NULL,
+  damage_total BIGINT NOT NULL DEFAULT 0,
+  last_hit_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (monster_id, character_id, period_key)
+);
+
+CREATE INDEX IF NOT EXISTS idx_boss_damage_contributions_rank
+  ON boss_damage_contributions(monster_id, period_key, damage_total DESC);
+
+-- ===================== Auto Farm / AFK Monster Hunting =====================
+CREATE TABLE IF NOT EXISTS character_auto_farm (
+  character_id UUID PRIMARY KEY REFERENCES characters(id) ON DELETE CASCADE,
+  monster_id VARCHAR(64) NOT NULL REFERENCES monsters(id) ON DELETE CASCADE,
+  started_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  last_claimed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_character_auto_farm_monster
+  ON character_auto_farm(monster_id);

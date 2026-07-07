@@ -13,7 +13,7 @@ shopRouter.get('/', async (_req: AuthedRequest, res) => {
   try {
     const shops = await pool.query('SELECT id, name, description FROM shops');
     const items = await pool.query(
-      `SELECT si.id, si.shop_id, si.item_type_id, si.price, si.stock, it.name, it.rarity, it.slot, it.base_stats, it.level_requirement
+      `SELECT si.id, si.shop_id, si.item_type_id, si.price, si.stock, it.name, it.rarity, it.slot, it.base_stats, it.level_requirement, it.special
        FROM shop_items si JOIN item_types it ON it.id = si.item_type_id`
     );
     res.json({ shops: shops.rows, items: items.rows });

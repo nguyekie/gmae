@@ -245,3 +245,15 @@ Ba vùng đất nguyên tố cuối game có tạo hình và quái biểu tượ
 - Vùng Đất Lửa: dung nham, tro nóng, Khổng Tượng Dung Nham, Phượng Hoàng Tro Đỏ.
 - Vùng Đất Băng: nền băng, tinh thể, Chấp Chính Băng Phong, Cự Nhân Pha Lê Băng.
 - Vùng Đất Nước: nước nông/sâu, Giao Long Triều Sâu, Manta Vực Triều.
+
+## 13. Cân bằng cuối game sau khi có SSS+ và trợ thủ
+
+Sau khi trợ thủ, trang bị thần thoại và SSS+ được cộng vào lực chiến thật, tuyến cuối cần khó hơn để tránh người chơi vượt nội dung quá nhanh.
+
+Điều chỉnh mới:
+- Boss thế giới `colossal_titan` và `fallen_paladin` được tăng mạnh HP/ATK/DEF để trở thành mục tiêu săn nhiều lượt, không còn là quái thường trá hình.
+- Bù lại, tỉ lệ rơi đồ mạnh từ boss tăng lên: SSS+, thần thoại, trang bị huyền thoại và nguyên liệu hiếm có cơ hội cao hơn.
+- Mỗi lượt đánh boss cũng có cơ hội rơi đồ mạnh riêng theo lượng sát thương đóng góp, giúp người chơi vẫn có phần thưởng khi chưa phải người kết liễu.
+- Quái Vùng Đất Lửa/Băng/Nước tăng cấp, HP, ATK và DEF để phù hợp với người chơi đã có đồ huyền thoại, thần thoại hoặc trợ thủ.
+- Nhiệm vụ Chương 10-12 tăng yêu cầu từ 3 lên 6 quái chính; nhiệm vụ phụ tăng từ 2 lên 4 quái tinh anh.
+- Yêu cầu cấp vùng mới nâng lên: Lửa cấp 26, Băng cấp 28, Nước cấp 30; nhiệm vụ phụ lần lượt cấp 27, 29, 31.

@@ -12,6 +12,7 @@ interface InventoryItem {
   level_requirement: number;
   tradable: boolean;
   stackable: boolean;
+  special?: any;
   instance_stats?: any;
 }
 
@@ -48,7 +49,7 @@ export function InventoryTab({ characterId, onChange }: Props) {
     return () => clearTimeout(t);
   }, [successMsg]);
 
-  const EQUIPPABLE_SLOTS = ["weapon", "armor", "helmet", "gloves", "boots", "trinket", "shard"];
+  const EQUIPPABLE_SLOTS = ["weapon", "armor", "helmet", "gloves", "boots", "trinket", "shard", "costume"];
 
   async function handleUse(itemInstanceId: string) {
     try {

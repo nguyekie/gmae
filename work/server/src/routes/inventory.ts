@@ -2,18 +2,54 @@ import { Router } from "express";
 import { z } from "zod";
 import { pool } from "../db.js";
 import { requireAuth, type AuthedRequest } from "../middleware/auth.js";
-import { assertOwnCharacter } from "./character.js";
+import { assertOwnCharacter, computeCompanionBonus, computeEquipmentBonus, computePotentialBonus } from "./character.js";
 
 export const inventoryRouter = Router();
 inventoryRouter.use(requireAuth);
 
-// Xem túi đồ (item đang ở location = 'inventory') của 1 nhân vật
+const EQUIPPABLE_SLOTS = ["weapon", "armor", "helmet", "gloves", "boots", "trinket", "shard", "costume"] as const;
+
+async function getEffectiveCaps(characterId: string, charRow: any) {
+  const gearBonus = await computeEquipmentBonus(characterId);
+  const companionBonus = await computeCompanionBonus(characterId);
+  const potentialBonus = computePotentialBonus(charRow);
+  return {
+    maxHp: charRow.max_hp + gearBonus.hp + companionBonus.hp + potentialBonus.stats.hp,
+    maxMp: charRow.max_mp + gearBonus.mp + companionBonus.mp,
+  };
+}
+
+async function applyUseBuff(client: any, characterId: string, useSpec: any) {
+  if (!useSpec?.buff_type) return null;
+  const durationMinutes = Math.max(1, Number(useSpec.duration_minutes ?? 60));
+  const multiplier = Math.max(1, Number(useSpec.multiplier ?? 2));
+  await client.query(
+    `INSERT INTO character_buffs (character_id, buff_type, multiplier, expires_at)
+     VALUES ($1, $2, $3, now() + ($4::int * interval '1 minute'))
+     ON CONFLICT (character_id, buff_type)
+     DO UPDATE SET
+       multiplier = EXCLUDED.multiplier,
+       expires_at = GREATEST(character_buffs.expires_at, now()) + ($4::int * interval '1 minute')`,
+    [characterId, useSpec.buff_type, multiplier, durationMinutes]
+  );
+  return { buffType: useSpec.buff_type, multiplier, durationMinutes };
+}
+
+async function consumeItemInstance(client: any, itemInstanceId: string, quantity: number, useQuantity: number) {
+  if (quantity > useQuantity) {
+    await client.query("UPDATE item_instances SET quantity = quantity - $1 WHERE id = $2", [useQuantity, itemInstanceId]);
+  } else {
+    await client.query("UPDATE item_instances SET owner_character_id = NULL, quantity = 0 WHERE id = $1", [itemInstanceId]);
+  }
+}
+
 inventoryRouter.get("/:characterId", async (req: AuthedRequest, res) => {
   const character = await assertOwnCharacter(req.userId!, req.params.characterId);
   if (!character) return res.status(404).json({ error: "Không tìm thấy nhân vật" });
 
   const result = await pool.query(
-    `SELECT ii.id, ii.quantity, ii.instance_stats, it.name, it.rarity, it.slot, it.base_stats, it.level_requirement, it.tradable, it.stackable
+    `SELECT ii.id, ii.quantity, ii.instance_stats, it.name, it.rarity, it.slot, it.base_stats,
+            it.level_requirement, it.tradable, it.stackable, it.special
      FROM item_instances ii
      JOIN item_types it ON it.id = ii.item_type_id
      WHERE ii.owner_character_id = $1 AND ii.location = 'inventory'
@@ -28,7 +64,6 @@ const equipSchema = z.object({
   itemInstanceId: z.string().uuid(),
 });
 
-// Mặc vật phẩm — item cũ ở slot đó (nếu có) sẽ tự động trả về túi đồ
 inventoryRouter.post("/equip", async (req: AuthedRequest, res) => {
   const parsed = equipSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "Dữ liệu không hợp lệ" });
@@ -40,10 +75,10 @@ inventoryRouter.post("/equip", async (req: AuthedRequest, res) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-
     const itemResult = await client.query(
       `SELECT ii.*, it.slot, it.level_requirement, it.name
-       FROM item_instances ii JOIN item_types it ON it.id = ii.item_type_id
+       FROM item_instances ii
+       JOIN item_types it ON it.id = ii.item_type_id
        WHERE ii.id = $1 AND ii.owner_character_id = $2 AND ii.location = 'inventory'
        FOR UPDATE`,
       [itemInstanceId, characterId]
@@ -52,6 +87,10 @@ inventoryRouter.post("/equip", async (req: AuthedRequest, res) => {
     if (!item) {
       await client.query("ROLLBACK");
       return res.status(404).json({ error: "Vật phẩm không có trong túi đồ" });
+    }
+    if (!EQUIPPABLE_SLOTS.includes(item.slot)) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({ error: "Vật phẩm này không thể mặc" });
     }
     if (character.level < item.level_requirement) {
       await client.query("ROLLBACK");
@@ -63,20 +102,18 @@ inventoryRouter.post("/equip", async (req: AuthedRequest, res) => {
       [characterId, item.slot]
     );
     const previousItemId = currentSlot.rows[0]?.item_instance_id ?? null;
-
     if (previousItemId) {
-      await client.query(
-        "UPDATE item_instances SET location = 'inventory' WHERE id = $1",
-        [previousItemId]
-      );
+      await client.query("UPDATE item_instances SET location = 'inventory' WHERE id = $1", [previousItemId]);
     }
 
-    await client.query("UPDATE item_instances SET location = 'equipped' WHERE id = $1", [itemInstanceId]);
     await client.query(
-      "UPDATE equipment_slots SET item_instance_id = $1 WHERE character_id = $2 AND slot_type = $3",
+      `INSERT INTO equipment_slots (character_id, slot_type, item_instance_id)
+       VALUES ($2, $3, $1)
+       ON CONFLICT (character_id, slot_type)
+       DO UPDATE SET item_instance_id = EXCLUDED.item_instance_id`,
       [itemInstanceId, characterId, item.slot]
     );
-
+    await client.query("UPDATE item_instances SET location = 'equipped' WHERE id = $1", [itemInstanceId]);
     await client.query("COMMIT");
     res.json({ success: true });
   } catch (err) {
@@ -90,7 +127,6 @@ inventoryRouter.post("/equip", async (req: AuthedRequest, res) => {
 
 const useSchema = z.object({ characterId: z.string().uuid(), itemInstanceId: z.string().uuid() });
 
-// Sử dụng vật phẩm tiêu hao (consumable) — heal/mana, giảm quantity hoặc xóa instance
 inventoryRouter.post("/use", async (req: AuthedRequest, res) => {
   const parsed = useSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "Dữ liệu không hợp lệ" });
@@ -102,11 +138,12 @@ inventoryRouter.post("/use", async (req: AuthedRequest, res) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-
     const itemResult = await client.query(
-      `SELECT ii.id, ii.quantity, it.base_stats, it.name
-       FROM item_instances ii JOIN item_types it ON it.id = ii.item_type_id
-       WHERE ii.id = $1 AND ii.owner_character_id = $2 AND ii.location = 'inventory' FOR UPDATE`,
+      `SELECT ii.id, ii.quantity, it.base_stats, it.name, it.special
+       FROM item_instances ii
+       JOIN item_types it ON it.id = ii.item_type_id
+       WHERE ii.id = $1 AND ii.owner_character_id = $2 AND ii.location = 'inventory'
+       FOR UPDATE`,
       [itemInstanceId, characterId]
     );
     const item = itemResult.rows[0];
@@ -117,30 +154,22 @@ inventoryRouter.post("/use", async (req: AuthedRequest, res) => {
 
     const heal = item.base_stats?.heal ?? 0;
     const mana = item.base_stats?.mana ?? 0;
-    if (heal === 0 && mana === 0) {
+    const buff = await applyUseBuff(client, characterId, item.special?.use);
+    if (heal === 0 && mana === 0 && !buff) {
       await client.query("ROLLBACK");
       return res.status(400).json({ error: "Không thể sử dụng vật phẩm này" });
     }
 
-    // Khóa character để cập nhật hp/mp trong cùng transaction
-    const charRes = await client.query("SELECT hp, max_hp, mp, max_mp FROM characters WHERE id = $1 FOR UPDATE", [characterId]);
+    const charRes = await client.query("SELECT * FROM characters WHERE id = $1 FOR UPDATE", [characterId]);
     const charRow = charRes.rows[0];
-    let newHp = charRow.hp;
-    let newMp = charRow.mp;
-    if (heal > 0) newHp = Math.min(charRow.max_hp, charRow.hp + heal);
-    if (mana > 0) newMp = Math.min(charRow.max_mp, charRow.mp + mana);
+    const caps = await getEffectiveCaps(characterId, charRow);
+    const newHp = heal > 0 ? Math.min(caps.maxHp, charRow.hp + heal) : charRow.hp;
+    const newMp = mana > 0 ? Math.min(caps.maxMp, charRow.mp + mana) : charRow.mp;
 
     await client.query("UPDATE characters SET hp = $1, mp = $2 WHERE id = $3", [newHp, newMp, characterId]);
-
-    if (item.quantity > 1) {
-      await client.query("UPDATE item_instances SET quantity = quantity - 1 WHERE id = $1", [itemInstanceId]);
-    } else {
-      // Không xóa vì có thể bị tham chiếu trong bảng transactions; thay vào đó đánh dấu là không còn chủ sở hữu
-      await client.query("UPDATE item_instances SET owner_character_id = NULL, quantity = 0 WHERE id = $1", [itemInstanceId]);
-    }
-
+    await consumeItemInstance(client, itemInstanceId, item.quantity ?? 1, 1);
     await client.query("COMMIT");
-    res.json({ success: true, hp: newHp, mp: newMp });
+    res.json({ success: true, hp: newHp, mp: newMp, buff });
   } catch (err) {
     await client.query("ROLLBACK");
     console.error(err);
@@ -155,7 +184,6 @@ const useMultipleSchema = z.object({
   items: z.array(z.object({ id: z.string().uuid(), qty: z.number().int().min(1).optional() })).min(1),
 });
 
-// Sử dụng nhiều vật phẩm tiêu hao cùng lúc (vd uống nhiều potion)
 inventoryRouter.post("/use-multiple", async (req: AuthedRequest, res) => {
   const parsed = useMultipleSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "Dữ liệu không hợp lệ" });
@@ -167,18 +195,20 @@ inventoryRouter.post("/use-multiple", async (req: AuthedRequest, res) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-
-    // Khóa character
-    const charRes = await client.query("SELECT hp, max_hp, mp, max_mp FROM characters WHERE id = $1 FOR UPDATE", [characterId]);
+    const charRes = await client.query("SELECT * FROM characters WHERE id = $1 FOR UPDATE", [characterId]);
     const charRow = charRes.rows[0];
+    const caps = await getEffectiveCaps(characterId, charRow);
     let newHp = charRow.hp;
     let newMp = charRow.mp;
+    const buffs: any[] = [];
 
     for (const it of items) {
       const itemResult = await client.query(
-        `SELECT ii.id, ii.quantity, it.base_stats, it.name
-         FROM item_instances ii JOIN item_types it ON it.id = ii.item_type_id
-         WHERE ii.id = $1 AND ii.owner_character_id = $2 AND ii.location = 'inventory' FOR UPDATE`,
+        `SELECT ii.id, ii.quantity, it.base_stats, it.name, it.special
+         FROM item_instances ii
+         JOIN item_types it ON it.id = ii.item_type_id
+         WHERE ii.id = $1 AND ii.owner_character_id = $2 AND ii.location = 'inventory'
+         FOR UPDATE`,
         [it.id, characterId]
       );
       const row = itemResult.rows[0];
@@ -190,26 +220,21 @@ inventoryRouter.post("/use-multiple", async (req: AuthedRequest, res) => {
       const qtyToUse = Math.min(it.qty ?? 1, row.quantity ?? 1);
       const heal = (row.base_stats?.heal ?? 0) * qtyToUse;
       const mana = (row.base_stats?.mana ?? 0) * qtyToUse;
-      if (heal === 0 && mana === 0) {
+      const buff = await applyUseBuff(client, characterId, row.special?.use);
+      if (buff) buffs.push(buff);
+      if (heal === 0 && mana === 0 && !buff) {
         await client.query("ROLLBACK");
         return res.status(400).json({ error: `Không thể sử dụng vật phẩm này: ${row.name}` });
       }
 
-      if (heal > 0) newHp = Math.min(charRow.max_hp, newHp + heal);
-      if (mana > 0) newMp = Math.min(charRow.max_mp, newMp + mana);
-
-      // Cập nhật quantity / xóa owner
-      if ((row.quantity ?? 1) > qtyToUse) {
-        await client.query("UPDATE item_instances SET quantity = quantity - $1 WHERE id = $2", [qtyToUse, it.id]);
-      } else {
-        await client.query("UPDATE item_instances SET owner_character_id = NULL, quantity = 0 WHERE id = $1", [it.id]);
-      }
+      if (heal > 0) newHp = Math.min(caps.maxHp, newHp + heal);
+      if (mana > 0) newMp = Math.min(caps.maxMp, newMp + mana);
+      await consumeItemInstance(client, it.id, row.quantity ?? 1, qtyToUse);
     }
 
     await client.query("UPDATE characters SET hp = $1, mp = $2 WHERE id = $3", [newHp, newMp, characterId]);
-
     await client.query("COMMIT");
-    res.json({ success: true, hp: newHp, mp: newMp });
+    res.json({ success: true, hp: newHp, mp: newMp, buffs });
   } catch (err) {
     await client.query("ROLLBACK");
     console.error(err);
@@ -221,7 +246,7 @@ inventoryRouter.post("/use-multiple", async (req: AuthedRequest, res) => {
 
 const unequipSchema = z.object({
   characterId: z.string().uuid(),
-  slotType: z.enum(["weapon", "armor", "helmet", "gloves", "boots", "trinket", "shard"]),
+  slotType: z.enum(EQUIPPABLE_SLOTS),
 });
 
 inventoryRouter.post("/unequip", async (req: AuthedRequest, res) => {
@@ -244,6 +269,7 @@ inventoryRouter.post("/unequip", async (req: AuthedRequest, res) => {
       await client.query("ROLLBACK");
       return res.status(400).json({ error: "Không có vật phẩm nào đang mặc ở slot này" });
     }
+
     await client.query("UPDATE item_instances SET location = 'inventory' WHERE id = $1", [itemId]);
     await client.query(
       "UPDATE equipment_slots SET item_instance_id = NULL WHERE character_id = $1 AND slot_type = $2",
